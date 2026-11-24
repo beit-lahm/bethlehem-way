@@ -1,0 +1,11 @@
+{
+  "name": "في طريق بيت لحم – صوم الميلاد المجيد",
+  "short_name": "طريق بيت لحم",
+  "start_url": "/bethlehem-way/",
+  "scope": "/bethlehem-way/",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "ar",
+  "background_color": "#FAF7F2",
+  "theme_color": "#092438"
+}

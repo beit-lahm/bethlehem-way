@@ -3,7 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>On a Mission – صوم الميلاد المجيد (رحلة 43 يومًا)</title>
+    <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#092438" />
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    window.OneSignalDeferred.push(async function(OneSignal) {
+      try {
+        await OneSignal.init({
+          appId: "aad98b75-2ce5-4b5d-80c6-f78e3c6a6c32",
+          serviceWorkerPath: "/bethlehem-way/OneSignalSDKWorker.js",
+          serviceWorkerParam: { scope: "/bethlehem-way/" }
+        });
+      } catch (e) {}
+    });
+  </script>
+  <title>في طريق بيت لحم – صوم الميلاد المجيد (رحلة 43 يومًا)</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -41,9 +56,9 @@
       -webkit-tap-highlight-color: transparent;
     }
     html.dark body { background-color: #07111A; }
-    .font-size-sm { font-size: 13.5px; }
-    .font-size-md { font-size: 15px; }
-    .font-size-lg { font-size: 17px; }
+    html.font-size-sm { font-size: 14px; }
+    html.font-size-md { font-size: 16px; }
+    html.font-size-lg { font-size: 19px; }
     .hero-gradient { background: linear-gradient(135deg, #092438 0%, #134C66 55%, #1A697D 100%); }
     .gold-gradient { background: linear-gradient(135deg, #D4A24C 0%, #E7BE73 100%); }
     .card-shadow { box-shadow: 0 6px 20px -6px rgba(9, 36, 56, 0.12); }
@@ -52,7 +67,7 @@
     .ltr-text { direction: ltr; unicode-bidi: embed; font-family: 'Inter', sans-serif; }
   </style>
 </head>
-<body class="font-size-md text-slate-800 dark:text-slate-100 antialiased min-h-screen flex justify-center">
+<body class="text-slate-800 dark:text-slate-100 antialiased min-h-screen flex justify-center">
   <!-- App Shell -->
   <div id="appShell" class="w-full max-w-md min-h-screen bg-cream dark:bg-[#0D1720] shadow-2xl relative flex flex-col border-x border-slate-200/70 dark:border-slate-800/80">
     <!-- Top Header (Hidden on Login) -->
@@ -63,7 +78,7 @@
         </div>
         <div class="min-w-0">
           <div class="flex items-center gap-1.5">
-            <span class="font-extrabold text-sm text-nativity-900 dark:text-white ltr-text truncate">On a Mission</span>
+            <span class="font-extrabold text-sm text-nativity-900 dark:text-white truncate">في طريق بيت لحم</span>
             <span id="roleBadge" class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-teal-100 text-teal-800 shrink-0">مستخدم</span>
           </div>
           <p id="headerMeetingLabel" class="text-[11px] text-slate-500 dark:text-slate-400 truncate">صوم الميلاد • 43 يومًا</p>
@@ -396,7 +411,8 @@
       adminSubTab: 'overview', // 'overview' | 'whatsapp' | 'emergency' | 'security'
       darkMode: false,
       fontSize: 'md',
-      reminderTime: '08:00',
+      reminderTime: '10:00',
+      afternoonTime: '17:00',
       courseFilter: 'all',
       expandedLessonDay: 1,
       quizCatFilter: 'all',
@@ -493,14 +509,18 @@
     }
 
     function getLiveLeaderboard() {
-      if (IS_SUPABASE_CONFIGURED && Array.isArray(liveLeaderboardCache) && liveLeaderboardCache.length > 0) {
-        return liveLeaderboardCache.map(row => ({
-          id: row.user_id,
-          name: row.user_id === state.user.id ? `${row.full_name} (أنت)` : row.full_name,
-          meeting: row.meeting,
-          score: Number(row.total_score || 0),
-          isMe: row.user_id === state.user.id
-        }));
+      if (IS_SUPABASE_CONFIGURED) {
+        if (Array.isArray(liveLeaderboardCache) && liveLeaderboardCache.length > 0) {
+          return liveLeaderboardCache.map(row => ({
+            id: row.user_id,
+            name: row.user_id === state.user.id ? `${row.full_name} (أنت)` : row.full_name,
+            meeting: row.meeting,
+            score: Number(row.total_score || 0),
+            isMe: row.user_id === state.user.id
+          }));
+        }
+        const st = getStats();
+        return [{ id: state.user.id || 'me', name: `${state.user.name || 'أنت'} (أنت)`, meeting: state.user.meeting, score: st.quizScore, isMe: true }];
       }
       const stats = getStats();
       const userName = state.user.name || (state.user.email ? state.user.email.split('@')[0] : 'أنت');
@@ -540,7 +560,7 @@
               <div class="w-12 h-12 rounded-2xl bg-white/15 text-nativity-gold mx-auto flex items-center justify-center">
                 <i data-lucide="sparkles" class="w-6 h-6"></i>
               </div>
-              <h1 class="text-xl font-extrabold ltr-text">On a Mission</h1>
+              <h1 class="text-xl font-extrabold">في طريق بيت لحم ✨</h1>
               <p class="text-xs font-bold text-nativity-goldLight">صوم الميلاد المجيد – رحلة 43 يومًا (روحي + عملي)</p>
               <p class="text-[11px] text-teal-100/80">من الأربعاء 25/11/2026 حتى عيد الميلاد 7/1/2027</p>
             </div>
@@ -575,6 +595,9 @@
               <div class="grid grid-cols-2 gap-2 pt-1">
                 <button type="submit" data-auth-mode="signin" class="py-2.5 rounded-xl hero-gradient text-white text-xs font-extrabold shadow hover:opacity-95 transition">تسجيل دخول ✝️</button>
                 <button type="button" id="btnSignUpSubmit" class="py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-extrabold shadow transition">إنشاء حساب جديد</button>
+              </div>
+              <div class="text-center pt-1">
+                <button type="button" id="btnForgotPassword" class="text-xs font-bold text-nativity-700 dark:text-nativity-gold hover:underline">نسيت كلمة السر؟ استرجاعها بالإيميل</button>
               </div>
               ${!IS_SUPABASE_CONFIGURED ? `
                 <button type="button" id="btnDemoLogin" class="w-full py-2 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 text-xs font-extrabold hover:bg-amber-200/80 transition">دخول تجريبي سريع للمعاينة (قبل ربط Supabase)</button>
@@ -634,6 +657,19 @@
             </div>
           </div>
         </section>
+
+        <!-- Real Notification Permission Banner (if not yet granted) -->
+        ${(typeof Notification !== 'undefined' && Notification.permission !== 'granted' && !state.notifBannerDismissed) ? `
+          <section class="bg-teal-50 dark:bg-teal-950/50 border border-teal-200 dark:border-teal-800 rounded-2xl p-3 flex items-center justify-between gap-2.5">
+            <div class="flex items-start gap-2 min-w-0">
+              <i data-lucide="bell-ring" class="w-4 h-4 text-teal-700 dark:text-nativity-gold shrink-0 mt-0.5"></i>
+              <div class="text-[11px] leading-snug text-teal-950 dark:text-teal-100">
+                <strong>فعّل إشعارات الرحلة لبيت لحم:</strong> آية اليوم <strong>10:00 ص</strong> + تذكير القراءات والكورسات <strong>5:00 م</strong>.
+              </div>
+            </div>
+            <button type="button" id="btnEnableNotifications" class="px-2.5 py-1.5 rounded-xl bg-nativity-800 text-white text-[11px] font-extrabold shrink-0">تفعيل</button>
+          </section>
+        ` : ''}
 
         <!-- Day Switcher -->
         <section class="bg-white dark:bg-[#11202D] rounded-2xl p-3 card-shadow border border-slate-200/70 dark:border-slate-800 flex items-center justify-between gap-2">
@@ -1049,8 +1085,35 @@
             </div>
 
             <div class="flex items-center justify-between text-xs font-bold pt-2 border-t border-slate-100 dark:border-slate-800">
-              <span>المنبّه الذكي 🔔</span>
-              <input type="time" id="reminderTimeInput" value="${state.reminderTime}" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              <span>المظهر (الوضع النهاري / الليلي)</span>
+              <div class="flex gap-1.5">
+                <button type="button" data-theme-mode="light" class="px-3 py-1 rounded-lg ${!state.darkMode ? 'bg-nativity-800 text-white' : 'bg-slate-100 dark:bg-slate-800'}">☀️ نهاري</button>
+                <button type="button" data-theme-mode="dark" class="px-3 py-1 rounded-lg ${state.darkMode ? 'bg-nativity-800 text-white' : 'bg-slate-100 dark:bg-slate-800'}">🌙 ليلي</button>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
+              <div class="flex items-center justify-between text-xs font-bold">
+                <span>إشعارات الرحلة اليومية 🔔</span>
+                <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${(typeof Notification !== 'undefined' && Notification.permission === 'granted') ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200' : 'bg-amber-100 text-amber-800'}">
+                  ${(typeof Notification !== 'undefined' && Notification.permission === 'granted') ? '🟢 مفعّلة' : 'غير مفعّلة'}
+                </span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-[11px] space-y-2 text-slate-700 dark:text-slate-200">
+                <div class="flex items-center justify-between gap-2">
+                  <span>🌅 <strong>إشعار آية اليوم:</strong></span>
+                  <input type="time" id="morningTimeInput" value="${state.reminderTime || '10:00'}" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold" />
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                  <span>🌇 <strong>تذكير الرحلة لبيت لحم:</strong></span>
+                  <input type="time" id="afternoonTimeInput" value="${state.afternoonTime || '17:00'}" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-1.5">
+                <button type="button" id="btnEnableNotifications" class="py-2 rounded-xl bg-nativity-800 text-white text-xs font-extrabold">🔔 تفعيل الإشعارات</button>
+                <button type="button" id="btnTestNotification" class="py-2 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 text-xs font-extrabold">جرّب إشعار الآن</button>
+              </div>
+              <button type="button" id="btnInstallPwa" class="w-full py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-extrabold">📲 تثبيت التطبيق على الموبايل (للعمل والإشعارات في الخلفية)</button>
             </div>
 
             <label class="flex items-center justify-between text-xs font-bold pt-2 border-t border-slate-100 dark:border-slate-800 cursor-pointer">
@@ -1240,8 +1303,8 @@
     // =========================================================================
     function render() {
       document.documentElement.classList.toggle('dark', state.darkMode);
-      document.body.classList.remove('font-size-sm', 'font-size-md', 'font-size-lg');
-      document.body.classList.add(`font-size-${state.fontSize}`);
+      document.documentElement.classList.remove('font-size-sm', 'font-size-md', 'font-size-lg');
+      document.documentElement.classList.add(`font-size-${state.fontSize}`);
 
       const topHeader = document.getElementById('topHeader');
       const bottomNav = document.getElementById('bottomNav');
@@ -1475,6 +1538,11 @@
           state.completedTasks = {};
           progRows.forEach(r => { state.completedTasks[`${r.day_num}_${r.task_key}`] = true; });
         }
+        const { data: attRows } = await sb.from('attendance_logs').select('log_date,checks,notes').eq('user_id', uid);
+        if (Array.isArray(attRows)) {
+          state.attendance = {};
+          attRows.forEach(a => { state.attendance[a.log_date] = { checks: a.checks || {}, notes: a.notes || {} }; });
+        }
         const { data: qRows } = await sb.from('quiz_answers').select('question_id,selected_option').eq('user_id', uid);
         if (Array.isArray(qRows)) {
           state.quizAnswers = {};
@@ -1667,6 +1735,182 @@
     if (sb) {
       sb.auth.getSession().then(({ data }) => {
         if (data && data.session && data.session.user) syncFromSupabase(data.session.user);
+      });
+    }
+
+
+    // =========================================================================
+    // 10. FORGOT PASSWORD, REAL NOTIFICATIONS (10 AM & 5 PM), & ATTENDANCE SYNC
+    // =========================================================================
+    function openForgotPasswordModal() {
+      openModal('استعادة كلمة السر 🔑', `
+        <p class="text-xs text-slate-600 dark:text-slate-300">اكتب الإيميل المسجّل به، وهنبعتلك رابط رسمي لتعيين كلمة سر جديدة فورًا:</p>
+        <input id="resetEmailInput" type="email" value="${(document.getElementById('loginEmail') && document.getElementById('loginEmail').value) || ''}" placeholder="name@example.com" class="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 ltr-text text-right" />
+        <button type="button" id="btnSendResetLink" class="w-full py-2.5 rounded-xl hero-gradient text-white text-xs font-extrabold">إرسال رابط استعادة كلمة السر</button>
+      `);
+    }
+
+    function openNewPasswordModal() {
+      openModal('تعيين كلمة سر جديدة 🔐', `
+        <p class="text-xs text-slate-600 dark:text-slate-300">اكتب كلمة السر الجديدة لحسابك (6 حروف أو أرقام على الأقل):</p>
+        <input id="newPassInput" type="password" placeholder="كلمة السر الجديدة" class="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+        <button type="button" id="btnSaveNewPassword" class="w-full py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold">حفظ كلمة السر الجديدة</button>
+      `);
+    }
+
+    async function requestAppNotifications() {
+      if (window.OneSignalDeferred && window.location.protocol === 'https:') {
+        window.OneSignalDeferred.push(async function(OneSignal) {
+          try {
+            await OneSignal.Notifications.requestPermission();
+            if (state.user && state.user.meeting) {
+              OneSignal.User.addTag("meeting", state.user.meeting);
+            }
+          } catch (e) {}
+        });
+      }
+      if (typeof Notification === 'undefined') {
+        showToast('المتصفح الحالي لا يدعم إشعارات الويب');
+        return;
+      }
+      try {
+        const perm = await Notification.requestPermission();
+        if (perm === 'granted') {
+          showToast('تم تفعيل الإشعارات بنجاح! (10 ص آية اليوم + 5 م تذكير لبيت لحم) 🔔');
+          sendDailyNotification('test');
+          render();
+        } else if (perm === 'denied') {
+          showToast('تم رفض الإشعارات من المتصفح — يمكنك تفعيلها من إعدادات الموقع');
+        }
+      } catch (err) {
+        showToast('تعذّر طلب إذن الإشعارات في هذه النافذة');
+      }
+    }
+
+    function sendDailyNotification(slot) {
+      if (typeof Notification === 'undefined' || Notification.permission !== 'granted') {
+        showToast('فعّل إذن الإشعارات أولًا من الزرار المجاور 🔔');
+        return;
+      }
+      const d = DAYS_DATA[state.selectedDay - 1] || DAYS_DATA[0];
+      let title = 'في طريق بيت لحم ✨';
+      let body = '';
+      if (slot === 'morning') {
+        title = `🌅 آية اليوم (يوم ${d.day} – صوم الميلاد)`;
+        body = `${d.meditation.ref}: ${d.meditation.text}`;
+      } else if (slot === 'afternoon') {
+        title = '🌇 كمّل رحلتك لبيت لحم ✝️';
+        body = `تذكير الساعة 5 العصر: ادخل كمّل ريلز التأمل وقراءاتك ودرس الكورس العملي النهاردة (${d.career.trackAr})!`;
+      } else {
+        title = `🔔 تم تفعيل إشعارات في طريق بيت لحم`;
+        body = `هيوصلك آية اليوم 10:00 ص (${d.meditation.ref}) وتذكير تشجيعي 5:00 م يوميًا!`;
+      }
+      try { new Notification(title, { body, dir: 'rtl', lang: 'ar' }); } catch (e) {}
+    }
+
+    // Capture native Android/Chrome PWA Install prompt for background operation
+    let deferredInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', (ev) => {
+      ev.preventDefault();
+      deferredInstallPrompt = ev;
+    });
+
+    // Check every 30 seconds for configured Morning Verse (default 10:00) & Afternoon Reminder (default 17:00)
+    function checkScheduledNotifications() {
+      if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+      const now = new Date();
+      const todayKey = now.toISOString().slice(0, 10);
+      const hhmm = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      const mTime = state.reminderTime || '10:00';
+      const aTime = state.afternoonTime || '17:00';
+      try {
+        if (hhmm === mTime && !localStorage.getItem(`notif_m_${todayKey}_${mTime}`)) {
+          localStorage.setItem(`notif_m_${todayKey}_${mTime}`, '1');
+          sendDailyNotification('morning');
+        }
+        if (hhmm === aTime && !localStorage.getItem(`notif_a_${todayKey}_${aTime}`)) {
+          localStorage.setItem(`notif_a_${todayKey}_${aTime}`, '1');
+          sendDailyNotification('afternoon');
+        }
+      } catch (e) {}
+    }
+    setInterval(checkScheduledNotifications, 30000);
+
+    document.addEventListener('change', (e) => {
+      if (e.target.id === 'morningTimeInput') {
+        state.reminderTime = e.target.value;
+        saveState();
+        showToast(`تم ضبط إشعار آية اليوم على ${state.reminderTime} 🌅`);
+      }
+      if (e.target.id === 'afternoonTimeInput') {
+        state.afternoonTime = e.target.value;
+        saveState();
+        showToast(`تم ضبط تذكير الرحلة لبيت لحم على ${state.afternoonTime} 🌇`);
+      }
+    });
+
+    document.addEventListener('click', async (e) => {
+      if (e.target.closest('#btnInstallPwa')) {
+        if (deferredInstallPrompt) {
+          deferredInstallPrompt.prompt();
+          await deferredInstallPrompt.userChoice;
+          deferredInstallPrompt = null;
+          showToast('تم طلب تثبيت التطبيق على الشاشة الرئيسية 📲');
+        } else {
+          openModal('تثبيت التطبيق للعمل في الخلفية 📲', `
+            <div class="text-xs space-y-2 leading-relaxed">
+              <p><strong>على أندرويد (Chrome):</strong> اضغط الـ 3 نقط فوق على الشمال ← اختار <strong>Add to Home screen / تثبيت التطبيق</strong>، وبعدها اسمح بالإشعارات.</p>
+              <p><strong>على آيفون (Safari):</strong> اضغط زر المشاركة <strong>⬆️</strong> تحت ← اختار <strong>Add to Home Screen</strong> ← افتحه من الشاشة الرئيسية واضغط <strong>تفعيل الإشعارات</strong>.</p>
+            </div>
+          `);
+        }
+      }
+    });
+
+    document.addEventListener('click', async (e) => {
+      if (e.target.closest('#btnForgotPassword')) { openForgotPasswordModal(); return; }
+      if (e.target.closest('#btnSendResetLink')) {
+        const em = (document.getElementById('resetEmailInput') && document.getElementById('resetEmailInput').value.trim()) || '';
+        if (!em) { showToast('اكتب الإيميل أولًا'); return; }
+        if (!sb) { showToast('ميزة استعادة كلمة السر تعمل بعد ربط Supabase'); closeModal(); return; }
+        const { error } = await sb.auth.resetPasswordForEmail(em, { redirectTo: window.location.origin + window.location.pathname });
+        if (error) showToast(`خطأ: ${error.message}`);
+        else { showToast('تم إرسال رابط استعادة كلمة السر إلى إيميلك ✓'); closeModal(); }
+        return;
+      }
+      if (e.target.closest('#btnSaveNewPassword')) {
+        const np = (document.getElementById('newPassInput') && document.getElementById('newPassInput').value) || '';
+        if (np.length < 6) { showToast('كلمة السر لازم تكون 6 حروف أو أرقام على الأقل'); return; }
+        if (sb) {
+          const { error } = await sb.auth.updateUser({ password: np });
+          if (error) showToast(`خطأ: ${error.message}`);
+          else { showToast('تم تحديث كلمة السر بنجاح ✓'); closeModal(); }
+        }
+        return;
+      }
+      const themeBtn = e.target.closest('[data-theme-mode]');
+      if (themeBtn) {
+        state.darkMode = themeBtn.dataset.themeMode === 'dark';
+        saveState();
+        render();
+        return;
+      }
+      if (e.target.closest('#btnEnableNotifications')) { await requestAppNotifications(); return; }
+      if (e.target.closest('#btnTestNotification')) { sendDailyNotification('afternoon'); return; }
+    });
+
+    // Save private attendance notes to Supabase when user finishes typing (blur)
+    document.addEventListener('blur', async (e) => {
+      if (e.target && e.target.dataset && e.target.dataset.attNote && sb && state.user.id) {
+        const d = state.attendanceDate;
+        const rec = state.attendance[d] || { checks: {}, notes: {} };
+        await sb.from('attendance_logs').upsert({ user_id: state.user.id, log_date: d, checks: rec.checks, notes: rec.notes, updated_at: new Date().toISOString() });
+      }
+    }, true);
+
+    if (sb) {
+      sb.auth.onAuthStateChange((event) => {
+        if (event === 'PASSWORD_RECOVERY') openNewPasswordModal();
       });
     }
 
