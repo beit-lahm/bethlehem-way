@@ -1059,11 +1059,12 @@
             </label>
           </div>
 
-          <!-- Role Switcher -->
+          ${!IS_SUPABASE_CONFIGURED ? `
+          <!-- Role Switcher (Preview Only) -->
           <div class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 space-y-2.5">
             <div class="flex items-center gap-2">
               <i data-lucide="shield-check" class="w-4 h-4 text-nativity-700 dark:text-nativity-gold"></i>
-              <h2 class="text-sm font-extrabold">لوحة التحكم الاحترافية (صلاحيات صوم الرسل)</h2>
+              <h2 class="text-sm font-extrabold">تبديل الصلاحية (وضع المعاينة فقط)</h2>
             </div>
             <div class="grid grid-cols-3 gap-1.5">
               ${[{ id: 'user', label: 'مستخدم' }, { id: 'admin', label: 'أدمن خادم' }, { id: 'super_admin', label: 'مدير النظام' }].map(r => `
@@ -1071,6 +1072,7 @@
               `).join('')}
             </div>
           </div>
+          ` : ''}
 
           ${(state.role === 'admin' || state.role === 'super_admin') ? `
             <!-- Pro Control Panel with 4 Sub-Tabs -->
@@ -1088,11 +1090,17 @@
 
               ${state.adminSubTab === 'overview' ? `
                 <div class="space-y-3 text-xs">
-                  <div class="font-extrabold text-nativity-800 dark:text-nativity-goldLight">توزيع الاجتماعات الـ 3 (بيانات تجريبية للمعاينة):</div>
+                  <div class="flex items-center justify-between gap-2">
+                    <div class="font-extrabold text-nativity-800 dark:text-nativity-goldLight">إحصائيات الاجتماعات الـ 3:</div>
+                    <button type="button" id="btnRefreshAdmin" class="px-2.5 py-1 rounded-lg bg-teal-700 text-white text-[10px] font-bold">🔄 تحديث البيانات</button>
+                  </div>
                   <div class="grid grid-cols-3 gap-1.5 text-center">
-                    <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800"><div class="font-extrabold text-sm">64%</div><div class="text-[10px]">مارمينا خريجين</div></div>
-                    <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800"><div class="font-extrabold text-sm">58%</div><div class="text-[10px]">الملاك ميخائيل</div></div>
-                    <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800"><div class="font-extrabold text-sm">61%</div><div class="text-[10px]">القديس أغسطينوس</div></div>
+                    ${MEETINGS.map(mName => {
+                      const row = Array.isArray(liveMeetingStatsCache) ? liveMeetingStatsCache.find(x => x.meeting === mName) : null;
+                      const members = row ? Number(row.members_count || 0) : 0;
+                      const active = row ? Number(row.active_today || 0) : 0;
+                      return `<div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800"><div class="font-extrabold text-sm">${active} / ${members}</div><div class="text-[9.5px] leading-tight mt-0.5">${mName}</div></div>`;
+                    }).join('')}
                   </div>
                   <div class="space-y-1.5">
                     <label class="font-bold block">تنبيه عام أعلى الرئيسية:</label>
@@ -1128,18 +1136,22 @@
                     <textarea id="waTemplateInput" rows="3" class="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px]">${state.whatsappConfig.template}</textarea>
                   </div>
                   <div class="space-y-1.5">
-                    <div class="font-extrabold">لم يسجلوا دخول اليوم (قائمة تجريبية):</div>
-                    ${state.inactiveDemoUsers.map(u => {
+                    <div class="flex items-center justify-between">
+                      <div class="font-extrabold">لم يسجلوا دخول اليوم (${state.inactiveDemoUsers.length}):</div>
+                      <button type="button" id="btnRefreshWa" class="px-2.5 py-1 rounded-lg bg-emerald-700 text-white text-[10px] font-bold">🔄 تحديث الغياب</button>
+                    </div>
+                    ${state.inactiveDemoUsers.length === 0 ? `
+                      <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-[11px] text-center text-slate-500">لا يوجد غياب اليوم (أو لم يُسجّل رقم واتساب للحسابات الغائبة).</div>
+                    ` : state.inactiveDemoUsers.map(u => {
                       const msg = encodeURIComponent(state.whatsappConfig.template.replace('{الاسم}', u.name).replace('{اليوم}', state.selectedDay));
                       return `
                         <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 flex items-center justify-between gap-2">
                           <div>
                             <div class="font-extrabold">${u.name}</div>
-                            <div class="text-[10px] text-slate-500">${u.meeting} • غائب ${u.missedDays} يوم</div>
+                            <div class="text-[10px] text-slate-500">${u.meeting} • آخر دخول: ${u.lastDate || 'سابق'}</div>
                           </div>
                           <div class="flex gap-1">
                             <a href="https://wa.me/${u.phone}?text=${msg}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white text-[10px] font-bold">واتساب</a>
-                            <button type="button" data-wa-sim="${u.id}" class="px-2 py-1.5 rounded-lg ${u.sent ? 'bg-slate-300 text-slate-700' : 'bg-nativity-800 text-white'} text-[10px] font-bold">${u.sent ? '✓ أُرسل' : 'محاكاة API'}</button>
                           </div>
                         </div>
                       `;
@@ -1258,6 +1270,8 @@
       const rb = document.getElementById('roleBadge');
       rb.textContent = roleMap.text;
       rb.className = `text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${roleMap.cls}`;
+      const quickRoleBtn = document.getElementById('btnQuickRole');
+      if (quickRoleBtn) quickRoleBtn.classList.toggle('hidden', IS_SUPABASE_CONFIGURED);
 
       if (state.announcement && state.announcement.trim()) {
         document.getElementById('announcementText').textContent = state.announcement;
@@ -1311,8 +1325,10 @@
         return;
       }
       if (e.target.closest('#btnLogout')) {
-        state.isLoggedIn = false;
-        saveState();
+        state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+        liveLeaderboardCache = null;
+        liveMeetingStatsCache = null;
+        try { localStorage.removeItem(STORAGE_KEY); } catch (err) {}
         render();
         return;
       }
@@ -1382,7 +1398,7 @@
       const fs = e.target.closest('[data-font-size]');
       if (fs) { state.fontSize = fs.dataset.fontSize; saveState(); render(); return; }
       const rb = e.target.closest('[data-set-role]');
-      if (rb) { state.role = rb.dataset.setRole; saveState(); render(); return; }
+      if (rb && !IS_SUPABASE_CONFIGURED) { state.role = rb.dataset.setRole; saveState(); render(); return; }
       const asub = e.target.closest('[data-admin-sub]');
       if (asub) { state.adminSubTab = asub.dataset.adminSub; saveState(); render(); return; }
       if (e.target.closest('#btnPublishAnn')) {
@@ -1453,6 +1469,7 @@
           state.jesusPrayers = prof.jesus_prayers || 0;
           await sb.from('profiles').update({ last_active_date: new Date().toISOString().slice(0, 10) }).eq('id', uid);
         }
+        state.role = 'user';
         const { data: roleRow } = await sb.from('user_roles').select('role').eq('user_id', uid).maybeSingle();
         if (roleRow && roleRow.role) {
           state.role = roleRow.role === 'servant_admin' ? 'admin' : roleRow.role;
@@ -1479,18 +1496,30 @@
         if (Array.isArray(lb)) liveLeaderboardCache = lb;
 
         if (state.role === 'admin' || state.role === 'super_admin') {
+          const { data: mStats } = await sb.rpc('get_admin_meeting_stats');
+          if (Array.isArray(mStats)) liveMeetingStatsCache = mStats;
           const { data: em } = await sb.from('emergency_requests').select('*').order('created_at', { ascending: false }).limit(30);
           if (Array.isArray(em)) {
             state.emergencyRequests = em.map(x => ({ id: String(x.id), meeting: x.meeting, type: x.request_type, note: x.note, status: x.status }));
           }
           const { data: wa } = await sb.rpc('get_inactive_whatsapp_users');
           if (Array.isArray(wa)) {
-            state.inactiveDemoUsers = wa.map(u => ({ id: u.user_id, name: u.full_name, meeting: u.meeting, phone: (u.whatsapp || '').replace(/^0/, '20'), missedDays: 1, sent: false }));
+            state.inactiveDemoUsers = wa.map(u => {
+              const digits = String(u.whatsapp || '').replace(/[^0-9]/g, '');
+              const egyptPhone = digits.startsWith('0') ? '20' + digits.slice(1) : digits;
+              return { id: u.user_id, name: u.full_name, meeting: u.meeting, phone: egyptPhone, lastDate: u.last_active_date, sent: false };
+            });
+          } else {
+            state.inactiveDemoUsers = [];
           }
           const { data: logs } = await sb.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(20);
           if (Array.isArray(logs)) {
             state.auditLog = logs.map(l => ({ time: new Date(l.created_at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }), actor: l.actor_email, action: l.action }));
           }
+        } else {
+          state.emergencyRequests = [];
+          state.inactiveDemoUsers = [];
+          liveMeetingStatsCache = null;
         }
         state.isLoggedIn = true;
         saveState();
@@ -1596,6 +1625,14 @@
       const reqB = e.target.closest('[data-req-id]');
       if (reqB) {
         await sb.from('emergency_requests').update({ status: reqB.dataset.reqStatus }).eq('id', Number(reqB.dataset.reqId));
+      }
+      if (e.target.closest('#btnRefreshAdmin') || e.target.closest('#btnRefreshWa')) {
+        const { data } = await sb.auth.getUser();
+        if (data && data.user) {
+          await syncFromSupabase(data.user);
+          showToast('تم تحديث بيانات لوحة التحكم والغياب ✓');
+        }
+        return;
       }
       if (e.target.closest('#btnLogout')) {
         await sb.auth.signOut();
