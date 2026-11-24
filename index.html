@@ -2289,9 +2289,9 @@
       const mfilt = e.target.closest('[data-user-mfilter]');
       if (mfilt) { state.adminUserFilter = mfilt.dataset.userMfilter; render(); return; }
       if (e.target.closest('#btnRefreshUsers') && sb) {
-        const { data: allU } = await sb.rpc('get_all_users_for_admin');
-        if (Array.isArray(allU)) { liveAllUsersCache = allU; render(); showToast('تم تحديث قائمة المستخدمين ✓'); }
-        else showToast('شغّل ملف update_admin_users_rpc.sql في Supabase أولًا');
+        const { data: allU, error } = await sb.rpc('get_all_users_for_admin');
+        if (Array.isArray(allU)) { liveAllUsersCache = allU; render(); showToast(`تم تحديث القائمة (${allU.length} مستخدم) ✓`); }
+        else showToast(error ? `خطأ Supabase: ${error.message}` : 'تأكد من تشغيل update_meeting_isolation_v3.sql');
         return;
       }
       const promBtn = e.target.closest('[data-promote-uid]');
