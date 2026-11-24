@@ -85,6 +85,10 @@
         </div>
       </div>
       <div class="flex items-center gap-1 shrink-0">
+        <button id="btnInAppNotifs" type="button" class="relative p-1.5 rounded-lg bg-amber-100/80 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200 hover:bg-amber-200 transition" title="الإشعارات الداخلية">
+          <i data-lucide="bell" class="w-4 h-4"></i>
+          <span id="notifUnreadBadge" class="hidden absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-600 text-white text-[9px] font-extrabold flex items-center justify-center">0</span>
+        </button>
         <button id="btnSosTop" type="button" class="text-[11px] font-extrabold px-2 py-1.5 rounded-lg bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-200 hover:bg-rose-200 transition flex items-center gap-1" title="طوارئ روحية">
           <i data-lucide="life-buoy" class="w-3.5 h-3.5"></i>
           <span>طوارئ</span>
@@ -436,6 +440,7 @@
     ];
     const DAILY_READINGS_43 = READING_WEEKS_43.flatMap(w => w.items);
     let liveAllUsersCache = [];
+    let userNotificationsCache = [];
 
     const DAYS_DATA = SPIRITUAL_SEED.map((sp, idx) => {
       const dayNum = idx + 1;
@@ -1624,6 +1629,12 @@
       const quickRoleBtn = document.getElementById('btnQuickRole');
       if (quickRoleBtn) quickRoleBtn.classList.toggle('hidden', IS_SUPABASE_CONFIGURED);
 
+      const unreadCount = userNotificationsCache.filter(n => !n.is_read).length;
+      const badgeEl = document.getElementById('notifUnreadBadge');
+      if (badgeEl) {
+        badgeEl.textContent = unreadCount;
+        badgeEl.classList.toggle('hidden', unreadCount === 0);
+      }
       if (state.announcement && state.announcement.trim()) {
         document.getElementById('announcementText').textContent = state.announcement;
         banner.classList.remove('hidden');
@@ -1744,11 +1755,7 @@
       if (rb && !IS_SUPABASE_CONFIGURED) { state.role = rb.dataset.setRole; saveState(); render(); return; }
       const asub = e.target.closest('[data-admin-sub]');
       if (asub) { state.adminSubTab = asub.dataset.adminSub; saveState(); render(); return; }
-      if (e.target.closest('#btnPublishAnn')) {
-        state.announcement = document.getElementById('adminAnnInput').value.trim();
-        state.auditLog.unshift({ time: 'الآن', actor: state.role === 'super_admin' ? 'مدير النظام' : 'أدمن خادم', action: 'تحديث التنبيه العام' });
-        saveState(); render(); showToast('تم نشر التنبيه ✓'); return;
-      }
+
       const reqB = e.target.closest('[data-req-id]');
       if (reqB) {
         const r = state.emergencyRequests.find(x => x.id === reqB.dataset.reqId);
@@ -1843,6 +1850,8 @@
           state.quizAnswers = {};
           qRows.forEach(r => { state.quizAnswers[r.question_id] = r.selected_option; });
         }
+        const { data: notifs } = await sb.from('user_notifications').select('*').eq('user_id', uid).order('created_at', { ascending: false }).limit(20);
+        if (Array.isArray(notifs)) userNotificationsCache = notifs;
         const { data: cfg } = await sb.from('app_settings').select('*').eq('id', 1).maybeSingle();
         if (cfg) {
           state.announcement = cfg.announcement || '';
@@ -1993,7 +2002,19 @@
         if (latest) await sb.from('emergency_requests').insert({ user_id: state.user.id, user_name: state.user.name, meeting: state.user.meeting, request_type: latest.type, note: latest.note });
       }
       if (e.target.closest('#btnPublishAnn')) {
-        await sb.from('app_settings').update({ announcement: state.announcement, updated_at: new Date().toISOString() }).eq('id', 1);
+        const inp = document.getElementById('adminAnnInput');
+        const msg = inp ? inp.value.trim() : '';
+        state.announcement = msg;
+        saveState();
+        if (sb) {
+          const { error } = await sb.rpc('publish_announcement', { msg });
+          if (error) { showToast(`خطأ في النشر: ${error.message}`); }
+          else { showToast('تم نشر التنبيه الداخلي للجميع ✓'); }
+        } else {
+          showToast('تم نشر التنبيه ✓');
+        }
+        render();
+        return;
       }
       const reqB = e.target.closest('[data-req-id]');
       if (reqB) {
@@ -2446,6 +2467,74 @@
         saveState(); render(); return;
       }
     });
+
+
+    // In-App Notifications Modal + Live 30s Background Sync for Announcements & Role Promotions
+    async function openInAppNotificationsModal() {
+      if (sb && state.user.id) {
+        const { data: notifs } = await sb.from('user_notifications').select('*').eq('user_id', state.user.id).order('created_at', { ascending: false }).limit(20);
+        if (Array.isArray(notifs)) userNotificationsCache = notifs;
+      }
+      openModal('الإشعارات والرسائل الداخلية 🔔', `
+        ${state.announcement ? `
+          <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs">
+            <div class="font-extrabold text-amber-900 dark:text-amber-200 mb-0.5">📢 تنبيه عام من الإدارة:</div>
+            <div>${state.announcement}</div>
+          </div>
+        ` : ''}
+        <div class="space-y-2 max-h-72 overflow-y-auto">
+          ${userNotificationsCache.length === 0
+            ? '<p class="text-xs text-center text-slate-500 py-4">لا توجد إشعارات شخصية جديدة حاليًا.</p>'
+            : userNotificationsCache.map(n => `
+              <div class="p-3 rounded-xl border text-xs ${n.is_read ? 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700' : 'bg-teal-50 dark:bg-teal-950/40 border-teal-300 dark:border-teal-700'}">
+                <div class="font-extrabold text-nativity-900 dark:text-white">${n.title}</div>
+                <div class="text-slate-700 dark:text-slate-200 mt-0.5">${n.body}</div>
+              </div>
+            `).join('')}
+        </div>
+      `);
+      if (sb && state.user.id && userNotificationsCache.some(n => !n.is_read)) {
+        await sb.from('user_notifications').update({ is_read: true }).eq('user_id', state.user.id).eq('is_read', false);
+        userNotificationsCache = userNotificationsCache.map(n => ({ ...n, is_read: true }));
+        render();
+      }
+    }
+
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('#btnInAppNotifs')) { openInAppNotificationsModal(); }
+    });
+
+    // Auto-refresh announcements, role changes, and personal notifications every 30s
+    setInterval(async () => {
+      if (!sb || !state.isLoggedIn || !state.user.id) return;
+      try {
+        const { data: cfg } = await sb.from('app_settings').select('*').eq('id', 1).maybeSingle();
+        let changed = false;
+        if (cfg && cfg.announcement !== state.announcement) {
+          state.announcement = cfg.announcement || '';
+          state.quizOpen = !!cfg.quiz_open;
+          state.lockFutureDays = !!cfg.lock_future_days;
+          changed = true;
+        }
+        const { data: notifs } = await sb.from('user_notifications').select('*').eq('user_id', state.user.id).order('created_at', { ascending: false }).limit(20);
+        if (Array.isArray(notifs) && notifs.length !== userNotificationsCache.length) {
+          userNotificationsCache = notifs;
+          const newest = notifs[0];
+          if (newest && !newest.is_read) showToast(`🔔 ${newest.title}: ${newest.body}`);
+          changed = true;
+        }
+        const { data: roleRow } = await sb.from('user_roles').select('role,admin_meeting').eq('user_id', state.user.id).maybeSingle();
+        if (roleRow) {
+          const mapped = roleRow.role === 'servant_admin' ? 'admin' : roleRow.role;
+          if (mapped !== state.role) {
+            state.role = mapped;
+            state.adminMeeting = roleRow.admin_meeting || state.user.meeting;
+            changed = true;
+          }
+        }
+        if (changed) { saveState(); render(); }
+      } catch (e) {}
+    }, 30000);
 
     render();
   </script>
