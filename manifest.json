@@ -7,5 +7,13 @@
   "dir": "rtl",
   "lang": "ar",
   "background_color": "#FAF7F2",
-  "theme_color": "#092438"
+  "theme_color": "#092438",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
