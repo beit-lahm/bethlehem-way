@@ -1299,20 +1299,7 @@
       lucide.createIcons();
     }
 
-    document.addEventListener('submit', (e) => {
-      if (e.target.id === 'loginForm') {
-        e.preventDefault();
-        const email = document.getElementById('loginEmail').value.trim();
-        const meeting = document.getElementById('loginMeeting').value;
-        const whatsapp = document.getElementById('loginWhatsapp').value.trim();
-        state.user = { email, name: email.split('@')[0], meeting, whatsapp, whatsappOptIn: true };
-        state.isLoggedIn = true;
-        state.activeTab = 'home';
-        saveState();
-        render();
-        showToast(`أهلًا بيك في رحلة صوم الميلاد – ${meeting} ✝️`);
-      }
-    });
+
 
     document.addEventListener('click', (e) => {
       if (e.target.closest('#btnDemoLogin')) {
@@ -1460,14 +1447,23 @@
         if (prof) {
           state.user = {
             id: uid,
-            email: prof.email,
-            name: prof.full_name,
-            meeting: prof.meeting,
+            email: prof.email || userObj.email || '',
+            name: prof.full_name || (userObj.email ? userObj.email.split('@')[0] : 'عضو'),
+            meeting: prof.meeting || 'مارمينا خريجين',
             whatsapp: prof.whatsapp || '',
             whatsappOptIn: !!prof.whatsapp_opt_in
           };
           state.jesusPrayers = prof.jesus_prayers || 0;
           await sb.from('profiles').update({ last_active_date: new Date().toISOString().slice(0, 10) }).eq('id', uid);
+        } else {
+          state.user = {
+            id: uid,
+            email: userObj.email || '',
+            name: userObj.email ? userObj.email.split('@')[0] : 'عضو',
+            meeting: state.user.meeting || 'مارمينا خريجين',
+            whatsapp: state.user.whatsapp || '',
+            whatsappOptIn: true
+          };
         }
         state.role = 'user';
         const { data: roleRow } = await sb.from('user_roles').select('role').eq('user_id', uid).maybeSingle();
@@ -1660,13 +1656,13 @@
       }
     });
 
-    // Replace local-only form submit with Supabase-aware handler
+    // Single unified login form submit handler (Supabase live or local preview)
     document.addEventListener('submit', async (e) => {
-      if (e.target.id === 'loginForm' && sb) {
+      if (e.target.id === 'loginForm') {
         e.preventDefault();
         await handleSupabaseAuth('signin');
       }
-    }, true);
+    });
 
     if (sb) {
       sb.auth.getSession().then(({ data }) => {
