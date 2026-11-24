@@ -107,24 +107,27 @@
     <!-- Main Container -->
     <main id="mainContent" class="flex-1 px-4 pt-3 pb-24 space-y-4 overflow-y-auto"></main>
 
-    <!-- Bottom Fixed Navigation (6 Tabs, Hidden on Login) -->
-    <nav id="bottomNav" class="hidden fixed bottom-0 w-full max-w-md z-30 bg-white/95 dark:bg-[#0B141C]/95 backdrop-blur border-t border-slate-200 dark:border-slate-800 px-1 py-1.5 grid grid-cols-6 gap-0.5">
-      <button type="button" data-tab="home" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[10.5px] font-bold transition">
+    <!-- Bottom Fixed Navigation (7 Tabs with القراءات as a main tab) -->
+    <nav id="bottomNav" class="hidden fixed bottom-0 w-full max-w-md z-30 bg-white/95 dark:bg-[#0B141C]/95 backdrop-blur border-t border-slate-200 dark:border-slate-800 px-0.5 py-1.5 grid grid-cols-7 gap-0.5">
+      <button type="button" data-tab="home" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[9.5px] font-bold transition">
         <i data-lucide="home" class="w-4 h-4 mb-0.5"></i><span>الرئيسية</span>
       </button>
-      <button type="button" data-tab="journey" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[10.5px] font-bold transition">
+      <button type="button" data-tab="readings" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[9.5px] font-bold transition">
+        <i data-lucide="book-open" class="w-4 h-4 mb-0.5"></i><span>القراءات</span>
+      </button>
+      <button type="button" data-tab="journey" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[9.5px] font-bold transition">
         <i data-lucide="calendar-days" class="w-4 h-4 mb-0.5"></i><span>الرحلة</span>
       </button>
-      <button type="button" data-tab="courses" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[10.5px] font-bold transition">
+      <button type="button" data-tab="courses" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[9.5px] font-bold transition">
         <i data-lucide="graduation-cap" class="w-4 h-4 mb-0.5"></i><span>الكورسات</span>
       </button>
-      <button type="button" data-tab="quiz" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[10.5px] font-bold transition">
+      <button type="button" data-tab="quiz" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[9.5px] font-bold transition">
         <i data-lucide="trophy" class="w-4 h-4 mb-0.5"></i><span>مسابقات</span>
       </button>
-      <button type="button" data-tab="attendance" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[10.5px] font-bold transition">
+      <button type="button" data-tab="attendance" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[9.5px] font-bold transition">
         <i data-lucide="check-square" class="w-4 h-4 mb-0.5"></i><span>حضور</span>
       </button>
-      <button type="button" data-tab="settings" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[10.5px] font-bold transition">
+      <button type="button" data-tab="settings" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[9.5px] font-bold transition">
         <i data-lucide="sliders" class="w-4 h-4 mb-0.5"></i><span>تحكم</span>
       </button>
     </nav>
@@ -195,7 +198,9 @@
       matt2: { name: 'تفسير متى 2 (الأنبا تكلا)', url: 'https://st-takla.org/pub_Bible-Interpretations/Holy-Bible-Tafsir-02-New-Testament/Father-Tadros-Yacoub-Malaty/01-Engeel-Matta/Tafseer-Engil-Mata__01-Chapter-02.html' },
       youthBishopric: { name: 'إسقفية الشباب – الكورسات المتخصصة', url: 'https://corsat-youthbishopric.com/pages/viewpages.aspx?pid=4' },
       clerical: { name: 'الكلية الإكليريكية – تراث مدرسة الإسكندرية', url: 'https://st-takla.org/Coptic-History/CopticHistory_01-Historical-Notes-on-the-Mother-Church/Christian-Church-History__052-Clergical-School-in-Cairo.html' },
-      baramoun: { name: 'الأنبا تكلا – طقس البرامون', url: 'https://st-takla.org/Coptic-Faith-Creed-Dogma/Coptic-Rite-n-Ritual-Taks-Al-Kanisa/Orthodox-Rites-n-Rituals-004-Baramoun.html' }
+      baramoun: { name: 'الأنبا تكلا – طقس البرامون', url: 'https://st-takla.org/Coptic-Faith-Creed-Dogma/Coptic-Rite-n-Ritual-Taks-Al-Kanisa/Orthodox-Rites-n-Rituals-004-Baramoun.html' },
+      otBible: { name: 'الكتاب المقدس – العهد القديم (الأنبا تكلا)', url: 'https://st-takla.org/Bibles/BibleSearch/indexes/ot-chapters.html' },
+      ntBible: { name: 'الكتاب المقدس – العهد الجديد (الأنبا تكلا)', url: 'https://st-takla.org/Bibles/BibleSearch/indexes/nt-chapters.html' }
     };
 
     // Verified YouTube Reels & Short Meditations — EXCLUSIVELY the 7 Requested Fathers
@@ -340,6 +345,98 @@
       { phase: 'يوم البرامون – الاستعداد للعيد', ref: 'متى 3: 1-12', med: 'اليوم الـ43 (برامون عيد الميلاد): استعداد روحي عميق بالصوم الانقطاعي حتى المساء قبل فرحة العيد.', pray: 'صلاة النوم والبرامون: اشكر الله على إتمام الـ43 يومًا واستعد للقداس.', praySrc: 'compline', teach: 'كلمة «برامون» تعني الاستعداد ويُصام انقطاعيًا بدون سمك، ويأتي يومًا واحدًا عندما يقع العيد الخميس (7/1/2027).', src: 'baramoun' }
     ];
 
+
+    // 43-Day Bible Reading Plan from uploaded PDF: "الطريق إلى الميلاد – خطة دراسة كتابية (43 قراءة في 6 أسابيع)"
+    const READING_WEEKS_43 = [
+      {
+        week: 1,
+        title: 'الأسبوع الأول',
+        subtitle: 'من الخليقة إلى السقوط — لماذا نحتاج إلى مخلّص؟',
+        items: [
+          { day: 1, num: 1, ref: 'تكوين 1', desc: 'الخليقة وقصد الله من الإنسان', test: 'ot' },
+          { day: 2, num: 2, ref: 'تكوين 2', desc: 'علاقة الإنسان بالله قبل السقوط', test: 'ot' },
+          { day: 3, num: 3, ref: 'تكوين 3', desc: 'دخول الخطية والوعد بنسل المرأة', test: 'ot' },
+          { day: 4, num: 4, ref: 'تكوين 12', desc: 'وعد الله لإبراهيم وبركة جميع الأمم', test: 'ot' },
+          { day: 5, num: 5, ref: 'تكوين 22', desc: 'تقديم إسحق المحبوب والذبيحة', test: 'ot' },
+          { day: 6, num: 6, ref: 'تكوين 49', desc: 'شيلون والملك الخارج من سبط يهوذا', test: 'ot' },
+          { day: 7, num: 7, ref: 'خروج 12', desc: 'خروف الفصح والخلاص بالدم', test: 'ot' }
+        ]
+      },
+      {
+        week: 2,
+        title: 'الأسبوع الثاني',
+        subtitle: 'المسيح المنتظر — ماذا قالت النبوات عنه؟',
+        items: [
+          { day: 8, num: 1, ref: 'تثنية 18', desc: 'النبي الآتي مثل موسى', test: 'ot' },
+          { day: 9, num: 2, ref: '2 صموئيل 7', desc: 'وعد الله لداود بملك أبدي', test: 'ot' },
+          { day: 10, num: 3, ref: 'مزمور 2', desc: 'الابن والملك الممسوح', test: 'ot' },
+          { day: 11, num: 4, ref: 'مزمور 72', desc: 'الملك الذي تتبارك به الأمم', test: 'ot' },
+          { day: 12, num: 5, ref: 'مزمور 110', desc: 'المسيح الملك والكاهن', test: 'ot' },
+          { day: 13, num: 6, ref: 'إشعياء 7', desc: 'علامة عمانوئيل والولادة من العذراء', test: 'ot' },
+          { day: 14, num: 7, ref: 'إشعياء 9', desc: 'الابن المولود والملك صاحب الألقاب الإلهية', test: 'ot' }
+        ]
+      },
+      {
+        week: 3,
+        title: 'الأسبوع الثالث',
+        subtitle: 'علامات اقتراب الميلاد — النبوات والاستعداد',
+        items: [
+          { day: 15, num: 1, ref: 'إشعياء 11', desc: 'غصن يسّى وحلول روح الرب', test: 'ot' },
+          { day: 16, num: 2, ref: 'ميخا 5', desc: 'بيت لحم وميلاد رئيس إسرائيل', test: 'ot' },
+          { day: 17, num: 3, ref: 'إرميا 23', desc: 'الغصن البار والملك الآتي من نسل داود', test: 'ot' },
+          { day: 18, num: 4, ref: 'دانيال 7', desc: 'ابن الإنسان والملكوت الأبدي', test: 'ot' },
+          { day: 19, num: 5, ref: 'إشعياء 40', desc: 'صوت صارخ في البرية', test: 'ot' },
+          { day: 20, num: 6, ref: 'ملاخي 3', desc: 'الملاك الذي يهيئ الطريق أمام الرب', test: 'ot' },
+          { day: 21, num: 7, ref: 'ملاخي 4', desc: 'إيليا الآتي قبل يوم الرب', test: 'ot' }
+        ]
+      },
+      {
+        week: 4,
+        title: 'الأسبوع الرابع',
+        subtitle: 'البشارة — بداية تحقيق الوعود',
+        items: [
+          { day: 22, num: 1, ref: 'لوقا 1: 5–25', desc: 'بشارة ميلاد يوحنا المعمدان', test: 'nt' },
+          { day: 23, num: 2, ref: 'لوقا 1: 26–38', desc: 'بشارة الملاك لمريم والتجسد', test: 'nt' },
+          { day: 24, num: 3, ref: 'لوقا 1: 39–56', desc: 'زيارة مريم لأليصابات والتسبحة', test: 'nt' },
+          { day: 25, num: 4, ref: 'متى 1', desc: 'نسب المسيح وميلاده من العذراء', test: 'nt' },
+          { day: 26, num: 5, ref: 'لوقا 1: 57–80', desc: 'ميلاد يوحنا وتسبحة زكريا', test: 'nt' },
+          { day: 27, num: 6, ref: 'إشعياء 60', desc: 'نور الرب ومجيء الأمم إليه', test: 'ot' },
+          { day: 28, num: 7, ref: 'زكريا 9', desc: 'الملك الآتي بتواضع', test: 'ot' }
+        ]
+      },
+      {
+        week: 5,
+        title: 'الأسبوع الخامس',
+        subtitle: 'أحداث الميلاد — الكلمة صار جسدًا',
+        items: [
+          { day: 29, num: 1, ref: 'لوقا 2', desc: 'الميلاد في بيت لحم وإعلان الخبر للرعاة', test: 'nt' },
+          { day: 30, num: 2, ref: 'متى 2: 1–12', desc: 'المجوس وسجودهم للمسيح', test: 'nt' },
+          { day: 31, num: 3, ref: 'متى 2: 13–23', desc: 'الهروب إلى مصر والعودة', test: 'nt' },
+          { day: 32, num: 4, ref: 'يوحنا 1', desc: 'الكلمة صار جسدًا', test: 'nt' },
+          { day: 33, num: 5, ref: 'فيلبي 2', desc: 'إخلاء الذات واتضاع المسيح', test: 'nt' },
+          { day: 34, num: 6, ref: 'غلاطية 4', desc: 'ملء الزمان وإرسال الابن', test: 'nt' },
+          { day: 35, num: 7, ref: 'عبرانيين 1', desc: 'الابن هو بهاء مجد الله', test: 'nt' }
+        ]
+      },
+      {
+        week: 6,
+        title: 'الأسبوع السادس',
+        subtitle: 'سر التجسد — لماذا جاء الله إلينا؟',
+        items: [
+          { day: 36, num: 1, ref: 'يوحنا 3', desc: 'الله أحب العالم وأرسل ابنه', test: 'nt' },
+          { day: 37, num: 2, ref: 'يوحنا 10', desc: 'الراعي الصالح الذي يبذل نفسه', test: 'nt' },
+          { day: 38, num: 3, ref: 'إشعياء 52', desc: 'عبد الرب المتألم', test: 'ot' },
+          { day: 39, num: 4, ref: 'إشعياء 53', desc: 'حمل الله الذي يحمل خطايانا', test: 'ot' },
+          { day: 40, num: 5, ref: 'عبرانيين 2', desc: 'أخذ جسدًا لكي يبطل سلطان الموت', test: 'nt' },
+          { day: 41, num: 6, ref: 'كولوسي 1', desc: 'المسيح صورة الله غير المنظور', test: 'nt' },
+          { day: 42, num: 7, ref: 'رؤيا 5', desc: 'الحمل المستحق أن يفتح السفر', test: 'nt' },
+          { day: 43, num: 8, ref: 'رؤيا 21', desc: 'غاية الخلاص — الله يسكن مع الإنسان', test: 'nt' }
+        ]
+      }
+    ];
+    const DAILY_READINGS_43 = READING_WEEKS_43.flatMap(w => w.items);
+    let liveAllUsersCache = [];
+
     const DAYS_DATA = SPIRITUAL_SEED.map((sp, idx) => {
       const dayNum = idx + 1;
       const dateInfo = getDateForDay(dayNum);
@@ -350,6 +447,7 @@
         dateIso: dateInfo.iso,
         phase: sp.phase,
         meditation: { ref: sp.ref, text: sp.med, source: SOURCES[sp.src] },
+        reading: DAILY_READINGS_43[idx],
         reel: FATHERS_REELS[idx % FATHERS_REELS.length],
         prayer: { text: sp.pray, source: SOURCES[sp.praySrc] },
         teaching: { text: sp.teach, source: SOURCES[sp.src] },
@@ -460,7 +558,7 @@
     // =========================================================================
     // 6. METRICS & LEADERBOARD
     // =========================================================================
-    const DAILY_KEYS = ['reel', 'prayer', 'teaching', 'career'];
+    const DAILY_KEYS = ['reading_ot', 'reel', 'prayer', 'teaching', 'career'];
     const TOTAL_DAILY_TASKS = DAYS_DATA.length * DAILY_KEYS.length; // 172
 
     function getDayCompletion(dayNum) {
@@ -477,7 +575,7 @@
         totalDone += c;
         if (c === 4) fullDays++;
         if (c > 0) activeDays++;
-        ['reel', 'prayer', 'teaching'].forEach(k => { if (state.completedTasks[`${d.day}_${k}`]) spiritualDone++; });
+        ['reading_ot', 'reel', 'prayer', 'teaching'].forEach(k => { if (state.completedTasks[`${d.day}_${k}`]) spiritualDone++; });
         if (state.completedTasks[`${d.day}_career`]) {
           careerDone++;
           if (d.career.track === 'marketing') marketingDone++;
@@ -500,7 +598,7 @@
       return {
         totalDone,
         totalPct: Math.round((totalDone / TOTAL_DAILY_TASKS) * 100),
-        spiritualPct: Math.round((spiritualDone / (43 * 3)) * 100),
+        spiritualPct: Math.round((spiritualDone / (43 * 4)) * 100),
         careerPct: Math.round((careerDone / 43) * 100),
         careerDone, marketingDone, aiDone, englishDone,
         fullDays, activeDays,
@@ -679,10 +777,34 @@
               <span class="text-xs font-extrabold px-2 py-0.5 rounded-md bg-nativity-900 text-nativity-goldLight">يوم ${d.day} / 43</span>
               <span class="text-xs font-bold text-slate-600 dark:text-slate-300">${d.dateLabel}</span>
             </div>
-            <p class="text-[11px] text-teal-700 dark:text-teal-300 font-semibold mt-1">${d.phase} • إنجاز اليوم: ${dayDone}/4</p>
+            <p class="text-[11px] text-teal-700 dark:text-teal-300 font-semibold mt-1">${d.phase} • إنجاز اليوم: ${dayDone}/5</p>
           </div>
           <button type="button" id="btnNextDay" ${d.day >= 43 ? 'disabled' : ''} class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 disabled:opacity-40"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
         </section>
+
+        <!-- 0. Daily Reading from PDF Plan ("الطريق إلى الميلاد") -->
+        <article class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 border-t-4 border-t-cyan-700 space-y-2.5">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-xl bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300 flex items-center justify-center shrink-0">
+                <i data-lucide="book-open" class="w-4 h-4"></i>
+              </span>
+              <div>
+                <h2 class="font-extrabold text-sm">قراءة اليوم: ${d.reading.ref}</h2>
+                <p class="text-[11px] text-cyan-700 dark:text-cyan-300 font-bold">${d.reading.desc}</p>
+              </div>
+            </div>
+            <button type="button" data-toggle-task="reading_ot" class="px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 ${isDone('reading_ot') ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-800'}">
+              ${isDone('reading_ot') ? '✓ قرأت' : 'تم - قرأت'}
+            </button>
+          </div>
+          <div class="flex items-center justify-between gap-2 pt-1">
+            <a href="${d.reading.test === 'nt' ? SOURCES.ntBible.url : SOURCES.otBible.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-bold text-nativity-700 dark:text-nativity-gold hover:underline">
+              <i data-lucide="external-link" class="w-3.5 h-3.5"></i><span>اقرأ الأصحاح على الأنبا تكلا</span>
+            </a>
+            <button type="button" data-tab="readings" class="px-2.5 py-1 rounded-xl bg-cyan-50 dark:bg-cyan-950/50 text-cyan-800 dark:text-cyan-200 text-[11px] font-extrabold border border-cyan-200 dark:border-cyan-800">📖 خطة الـ 43 قراءة</button>
+          </div>
+        </article>
 
         <!-- 1. Spiritual Reel (60-90s from the 7 Fathers ONLY) -->
         <article class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 border-t-4 border-t-sky-600 space-y-2.5">
@@ -967,6 +1089,58 @@
       `;
     }
 
+
+    function renderReadings() {
+      const readDoneCount = DAYS_DATA.filter(d => !!state.completedTasks[`${d.day}_reading_ot`]).length;
+      return `
+        <section class="hero-gradient rounded-2xl p-4 text-white card-shadow flex items-center justify-between gap-3">
+          <div>
+            <h1 class="text-lg font-extrabold">الطريق إلى الميلاد</h1>
+            <p class="text-xs text-teal-100">خطة دراسة كتابية • 43 قراءة في 6 أسابيع</p>
+            <p class="text-[11px] text-nativity-goldLight font-bold mt-1">أنجزت: ${readDoneCount} / 43 قراءة</p>
+          </div>
+          <div class="w-11 h-11 rounded-full border-4 border-nativity-gold flex items-center justify-center text-xs font-extrabold text-nativity-goldLight shrink-0">
+            ${Math.round((readDoneCount / 43) * 100)}%
+          </div>
+        </section>
+
+        <section class="space-y-3">
+          ${READING_WEEKS_43.map(w => `
+            <div class="bg-white dark:bg-[#11202D] rounded-2xl card-shadow border border-slate-200/80 dark:border-slate-800 overflow-hidden">
+              <div class="bg-teal-50/90 dark:bg-slate-800/80 px-4 py-3 border-b border-slate-200/70 dark:border-slate-700">
+                <h2 class="text-sm font-extrabold text-nativity-900 dark:text-nativity-goldLight">${w.title}</h2>
+                <p class="text-[11px] text-slate-600 dark:text-slate-300 font-semibold">${w.subtitle}</p>
+              </div>
+              <div class="divide-y divide-slate-100 dark:divide-slate-800">
+                ${w.items.map(item => {
+                  const done = !!state.completedTasks[`${item.day}_reading_ot`];
+                  const url = item.test === 'nt' ? SOURCES.ntBible.url : SOURCES.otBible.url;
+                  return `
+                    <div class="px-3.5 py-2.5 flex items-center justify-between gap-2.5 ${item.day === state.selectedDay ? 'bg-amber-50/60 dark:bg-amber-950/20' : ''}">
+                      <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                        <span class="w-7 h-7 rounded-full ${done ? 'bg-emerald-600' : 'bg-nativity-gold'} text-white text-xs font-extrabold flex items-center justify-center shrink-0">
+                          ${done ? '✓' : item.num}
+                        </span>
+                        <div class="min-w-0">
+                          <div class="text-xs font-extrabold text-nativity-900 dark:text-white">${item.ref} <span class="text-[10px] font-normal text-slate-400">• يوم ${item.day}</span></div>
+                          <div class="text-[11px] text-slate-600 dark:text-slate-300 truncate">${item.desc}</div>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-1.5 shrink-0">
+                        <a href="${url}" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[10.5px] font-bold text-nativity-800 dark:text-nativity-goldLight">اقرأ</a>
+                        <button type="button" data-toggle-read-day="${item.day}" class="px-2.5 py-1 rounded-lg text-[10.5px] font-bold ${done ? 'bg-emerald-600 text-white' : 'bg-nativity-800 text-white'}">${done ? '✓ تم' : 'قرأت'}</button>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `).join('')}
+          <p class="text-[11px] text-center text-slate-500 dark:text-slate-400">تنبيه: تم تقسيم لوقا 1 ومتى 2 إلى مقاطع محددة حتى تكون القراءة مركزة.</p>
+        </section>
+      `;
+    }
+
     function renderJourney() {
       const stats = getStats();
       const weeks = [
@@ -981,13 +1155,13 @@
         <section class="hero-gradient rounded-2xl p-4 text-white card-shadow space-y-3">
           <div class="flex items-center justify-between">
             <div>
-              <h1 class="text-base font-extrabold">خريطة الرحلة – 43 يومًا</h1>
+              <div class="flex items-center gap-2"><h1 class="text-base font-extrabold">خريطة الرحلة – 43 يومًا</h1><button type="button" id="btnOpenReadingSchedule" class="px-2 py-1 rounded-lg bg-white/15 text-[10px] font-bold text-nativity-goldLight">📅 جدول القراءات</button></div>
               <p class="text-xs text-teal-100">إنجاز المهام اليومية: ${stats.totalDone} / ${TOTAL_DAILY_TASKS}</p>
             </div>
             <div class="text-2xl font-extrabold text-nativity-gold">${stats.totalPct}%</div>
           </div>
           <div class="grid grid-cols-3 gap-2 text-center">
-            <div class="bg-white/10 rounded-xl p-2"><div class="text-base font-extrabold">${stats.fullDays}</div><div class="text-[10px] text-teal-100">أيام كاملة (4/4)</div></div>
+            <div class="bg-white/10 rounded-xl p-2"><div class="text-base font-extrabold">${stats.fullDays}</div><div class="text-[10px] text-teal-100">أيام كاملة (5/5)</div></div>
             <div class="bg-white/10 rounded-xl p-2"><div class="text-base font-extrabold">${stats.careerDone}/43</div><div class="text-[10px] text-teal-100">دروس عملية</div></div>
             <div class="bg-white/10 rounded-xl p-2"><div class="text-base font-extrabold text-nativity-goldLight">${stats.quizScore}</div><div class="text-[10px] text-teal-100">نقاط المسابقة</div></div>
           </div>
@@ -1002,10 +1176,10 @@
                   const done = getDayCompletion(d.day);
                   const locked = state.lockFutureDays && d.day > state.selectedDay && state.role === 'user';
                   let cls = 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-transparent';
-                  if (done === 4) cls = 'bg-emerald-600 text-white border-emerald-500';
+                  if (done === 5) cls = 'bg-emerald-600 text-white border-emerald-500';
                   else if (done > 0) cls = 'bg-amber-100 dark:bg-amber-900/50 text-amber-900 dark:text-amber-100 border-amber-400';
                   if (d.day === state.selectedDay) cls += ' ring-2 ring-nativity-700 dark:ring-nativity-gold';
-                  return `<button type="button" data-jump-day="${d.day}" ${locked ? 'disabled' : ''} class="flex flex-col items-center justify-center py-2 rounded-xl border text-[11px] font-bold ${cls} ${locked ? 'opacity-40' : ''}"><span>${locked ? '🔒' : d.day}</span><span class="text-[9px] opacity-80">${done}/4</span></button>`;
+                  return `<button type="button" data-jump-day="${d.day}" ${locked ? 'disabled' : ''} class="flex flex-col items-center justify-center py-2 rounded-xl border text-[11px] font-bold ${cls} ${locked ? 'opacity-40' : ''}"><span>${locked ? '🔒' : d.day}</span><span class="text-[9px] opacity-80">${done}/5</span></button>`;
                 }).join('')}
               </div>
             </div>
@@ -1142,10 +1316,11 @@
             <div class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border-2 border-nativity-gold/70 space-y-3">
               <div class="flex gap-1 overflow-x-auto hide-scrollbar pb-1 border-b border-slate-100 dark:border-slate-800">
                 ${[
-                  { id: 'overview', label: 'الإحصائيات والتحكم' },
+                  { id: 'overview', label: 'الإحصائيات' },
+                  { id: 'users', label: `المستخدمون (${liveAllUsersCache.length})` },
                   { id: 'whatsapp', label: 'واتساب الغياب' },
                   { id: 'emergency', label: `طوارئ (${state.emergencyRequests.length})` },
-                  { id: 'security', label: 'الأمان وRLS' }
+                  { id: 'security', label: 'الأمان' }
                 ].map(t => `
                   <button type="button" data-admin-sub="${t.id}" class="px-2.5 py-1.5 rounded-lg text-[11px] font-extrabold shrink-0 ${state.adminSubTab === t.id ? 'bg-nativity-900 text-nativity-goldLight' : 'bg-slate-100 dark:bg-slate-800'}">${t.label}</button>
                 `).join('')}
@@ -1182,6 +1357,111 @@
                       <input type="checkbox" id="chkLockFuture" ${state.lockFutureDays ? 'checked' : ''} class="w-4 h-4 accent-amber-600" />
                     </label>
                   ` : ''}
+                </div>
+              ` : ''}
+
+              ${state.adminSubTab === 'users' ? `
+                <div class="space-y-3 text-xs">
+                  ${(() => {
+                    const todayIso = new Date().toISOString().slice(0, 10);
+                    const totalU = liveAllUsersCache.length;
+                    const activeU = liveAllUsersCache.filter(u => u.last_active_date >= todayIso).length;
+                    const absentU = totalU - activeU;
+                    const adminsU = liveAllUsersCache.filter(u => u.role === 'servant_admin' || u.role === 'super_admin').length;
+                    return `
+                      <div class="grid grid-cols-4 gap-1.5 text-center">
+                        <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700"><div class="text-sm font-extrabold text-nativity-900 dark:text-white">${totalU}</div><div class="text-[9.5px] text-slate-500">المسجلين</div></div>
+                        <div class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800"><div class="text-sm font-extrabold text-emerald-700 dark:text-emerald-300">${activeU}</div><div class="text-[9.5px] text-emerald-700 dark:text-emerald-300">حاضر اليوم</div></div>
+                        <div class="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200/60 dark:border-rose-800"><div class="text-sm font-extrabold text-rose-700 dark:text-rose-300">${absentU}</div><div class="text-[9.5px] text-rose-700 dark:text-rose-300">غائب</div></div>
+                        <div class="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/60 dark:border-purple-800"><div class="text-sm font-extrabold text-purple-700 dark:text-purple-300">${adminsU}</div><div class="text-[9.5px] text-purple-700 dark:text-purple-300">إدارة</div></div>
+                      </div>
+                    `;
+                  })()}
+
+                  <div class="flex items-center gap-1.5">
+                    <input id="adminUserSearchInput" type="search" value="${state.adminUserSearch || ''}" placeholder="ابحث بالاسم أو الإيميل أو الواتساب..." class="flex-1 text-xs p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-nativity-700" />
+                    <button type="button" id="btnRefreshUsers" class="px-2.5 py-2 rounded-xl bg-teal-700 text-white text-[11px] font-bold shrink-0" title="تحديث">🔄</button>
+                    <button type="button" id="btnExportUsersCsv" class="px-2.5 py-2 rounded-xl bg-nativity-900 text-nativity-goldLight text-[11px] font-bold shrink-0" title="تصدير CSV">📥 Excel</button>
+                  </div>
+
+                  <div class="flex gap-1 overflow-x-auto hide-scrollbar pb-0.5">
+                    ${['الكل', ...MEETINGS].map(mf => `
+                      <button type="button" data-user-mfilter="${mf}" class="px-2.5 py-1 rounded-lg text-[10.5px] font-bold shrink-0 ${(state.adminUserFilter || 'الكل') === mf ? 'bg-nativity-800 text-white' : 'bg-slate-100 dark:bg-slate-800'}">${mf}</button>
+                    `).join('')}
+                  </div>
+
+                  <div class="flex gap-1">
+                    ${[
+                      { id: 'all', label: 'الجميع' },
+                      { id: 'active', label: '🟢 حاضر اليوم' },
+                      { id: 'absent', label: '⚪ غائب' }
+                    ].map(sf => `
+                      <button type="button" data-user-sfilter="${sf.id}" class="flex-1 py-1 rounded-lg text-[10.5px] font-bold ${(state.adminUserStatusFilter || 'all') === sf.id ? 'bg-slate-800 text-white dark:bg-nativity-gold dark:text-nativity-900' : 'bg-slate-100 dark:bg-slate-800'}">${sf.label}</button>
+                    `).join('')}
+                  </div>
+
+                  <div class="space-y-2 max-h-96 overflow-y-auto">
+                    ${(() => {
+                      const todayIso = new Date().toISOString().slice(0, 10);
+                      const q = (state.adminUserSearch || '').trim().toLowerCase();
+                      let list = liveAllUsersCache.slice();
+                      if (state.adminUserFilter && state.adminUserFilter !== 'الكل') {
+                        list = list.filter(u => u.meeting === state.adminUserFilter);
+                      }
+                      if (state.adminUserStatusFilter === 'active') {
+                        list = list.filter(u => u.last_active_date >= todayIso);
+                      } else if (state.adminUserStatusFilter === 'absent') {
+                        list = list.filter(u => u.last_active_date < todayIso);
+                      }
+                      if (q) {
+                        list = list.filter(u =>
+                          (u.full_name || '').toLowerCase().includes(q) ||
+                          (u.email || '').toLowerCase().includes(q) ||
+                          (u.whatsapp || '').toLowerCase().includes(q)
+                        );
+                      }
+                      if (!list.length) return '<div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-center text-slate-500">لا توجد نتائج مطابقة — اضغط 🔄 للتحديث</div>';
+                      return list.map(u => {
+                        const activeToday = u.last_active_date >= todayIso;
+                        const roleBadgeMap = {
+                          user: 'bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-200',
+                          servant_admin: 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200',
+                          super_admin: 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-200'
+                        };
+                        const roleNameMap = { user: 'مستخدم', servant_admin: 'أدمن خادم', super_admin: 'مدير النظام' };
+                        const digits = String(u.whatsapp || '').replace(/[^0-9]/g, '');
+                        const waPhone = digits.startsWith('0') ? '20' + digits.slice(1) : digits;
+                        return `
+                          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700 space-y-2">
+                            <div class="flex items-start justify-between gap-2">
+                              <div class="min-w-0 space-y-0.5">
+                                <div class="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 flex-wrap">
+                                  <span>${u.full_name || 'بدون اسم'}</span>
+                                  <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-teal-100/80 text-teal-900 dark:bg-teal-900/40 dark:text-teal-200">${u.meeting}</span>
+                                </div>
+                                <div class="text-[11px] text-slate-600 dark:text-slate-300 ltr-text text-right break-all">📧 ${u.email}</div>
+                                <div class="text-[11px] text-slate-600 dark:text-slate-300 flex items-center gap-2">
+                                  <span>📱 واتساب: <strong class="ltr-text">${u.whatsapp || 'غير مسجّل'}</strong></span>
+                                  ${waPhone.length >= 10 ? `<a href="https://wa.me/${waPhone}" target="_blank" rel="noopener noreferrer" class="px-2 py-0.5 rounded-md bg-emerald-600 text-white text-[10px] font-bold">مراسلة</a>` : ''}
+                                </div>
+                              </div>
+                              <div class="text-left shrink-0 space-y-1">
+                                <span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${roleBadgeMap[u.role] || roleBadgeMap.user}">${roleNameMap[u.role] || u.role}</span>
+                                <div class="text-[10px] ${activeToday ? 'text-emerald-600 font-bold' : 'text-slate-400'}">${activeToday ? '🟢 حاضر اليوم' : '⚪ ' + (u.last_active_date || '—')}</div>
+                              </div>
+                            </div>
+                            ${state.role === 'super_admin' && u.user_id !== state.user.id ? `
+                              <div class="flex gap-1 pt-1.5 border-t border-slate-200/60 dark:border-slate-700/60">
+                                <button type="button" data-promote-uid="${u.user_id}" data-promote-role="user" class="flex-1 py-1 rounded-lg text-[10px] font-bold ${u.role === 'user' ? 'bg-slate-700 text-white' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700'}">مستخدم</button>
+                                <button type="button" data-promote-uid="${u.user_id}" data-promote-role="servant_admin" class="flex-1 py-1 rounded-lg text-[10px] font-bold ${u.role === 'servant_admin' ? 'bg-amber-600 text-white' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700'}">أدمن خادم</button>
+                                <button type="button" data-promote-uid="${u.user_id}" data-promote-role="super_admin" class="flex-1 py-1 rounded-lg text-[10px] font-bold ${u.role === 'super_admin' ? 'bg-purple-700 text-white' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700'}">مدير نظام</button>
+                              </div>
+                            ` : ''}
+                          </div>
+                        `;
+                      }).join('');
+                    })()}
+                  </div>
                 </div>
               ` : ''}
 
@@ -1344,6 +1624,7 @@
       }
 
       if (state.activeTab === 'home') main.innerHTML = renderHome();
+      else if (state.activeTab === 'readings') main.innerHTML = renderReadings();
       else if (state.activeTab === 'journey') main.innerHTML = renderJourney();
       else if (state.activeTab === 'courses') main.innerHTML = renderCourses();
       else if (state.activeTab === 'quiz') main.innerHTML = renderQuizAndLeaderboard();
@@ -1561,6 +1842,8 @@
 
         if (state.role === 'admin' || state.role === 'super_admin') {
           const { data: mStats } = await sb.rpc('get_admin_meeting_stats');
+          const { data: allU } = await sb.rpc('get_all_users_for_admin');
+          if (Array.isArray(allU)) liveAllUsersCache = allU;
           if (Array.isArray(mStats)) liveMeetingStatsCache = mStats;
           const { data: em } = await sb.from('emergency_requests').select('*').order('created_at', { ascending: false }).limit(30);
           if (Array.isArray(em)) {
@@ -1913,6 +2196,129 @@
         if (event === 'PASSWORD_RECOVERY') openNewPasswordModal();
       });
     }
+
+
+    // 43-Day Reading Schedule Modal + Admin User Promotion Handler
+    function openReadingScheduleModal() {
+      openModal('جدول القراءات اليومية (43 يومًا) 📖', `
+        <p class="text-xs text-slate-600 dark:text-slate-300">أصحاح من العهد القديم + أصحاح من العهد الجديد كل يوم طوال صوم الميلاد (25/11/2026 – 6/1/2027). اضغط على أي يوم للانتقال له:</p>
+        <div class="flex gap-2 text-[11px]">
+          <a href="${SOURCES.otBible.url}" target="_blank" rel="noopener noreferrer" class="flex-1 py-1.5 text-center rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 font-bold">📖 فهرس العهد القديم</a>
+          <a href="${SOURCES.ntBible.url}" target="_blank" rel="noopener noreferrer" class="flex-1 py-1.5 text-center rounded-xl bg-teal-100 dark:bg-teal-900/40 text-teal-900 dark:text-teal-200 font-bold">📖 فهرس العهد الجديد</a>
+        </div>
+        <div class="overflow-x-auto max-h-[56vh] border border-slate-200 dark:border-slate-700 rounded-xl">
+          <table class="w-full text-[11px] text-right">
+            <thead class="bg-nativity-900 text-white sticky top-0">
+              <tr>
+                <th class="p-2">اليوم</th>
+                <th class="p-2">العهد القديم</th>
+                <th class="p-2">العهد الجديد</th>
+                <th class="p-2 text-center">الحالة</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+              ${DAYS_DATA.map(d => {
+                const otDone = !!state.completedTasks[`${d.day}_reading_ot`];
+                const ntDone = !!state.completedTasks[`${d.day}_reading_nt`];
+                return `
+                  <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer" data-jump-day-modal="${d.day}">
+                    <td class="p-2 font-extrabold whitespace-nowrap">${d.day} <span class="text-[9.5px] font-normal text-slate-500">(${d.dateShort})</span></td>
+                    <td class="p-2">${d.reading.ot}</td>
+                    <td class="p-2">${d.reading.nt}</td>
+                    <td class="p-2 text-center whitespace-nowrap">${otDone && ntDone ? '✅' : (otDone || ntDone ? '◐' : '⬜')}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `);
+    }
+
+    document.addEventListener('click', async (e) => {
+      const trd = e.target.closest('[data-toggle-read-day]');
+      if (trd) {
+        const dayNum = Number(trd.dataset.toggleReadDay);
+        const key = `${dayNum}_reading_ot`;
+        state.completedTasks[key] = !state.completedTasks[key];
+        saveState();
+        render();
+        if (state.completedTasks[key]) showToast(`تم تسجيل قراءة يوم ${dayNum} ✓`);
+        if (sb && state.user.id) {
+          if (state.completedTasks[key]) await sb.from('user_progress').upsert({ user_id: state.user.id, day_num: dayNum, task_key: 'reading_ot' });
+          else await sb.from('user_progress').delete().match({ user_id: state.user.id, day_num: dayNum, task_key: 'reading_ot' });
+        }
+        return;
+      }
+      if (e.target.closest('#btnOpenReadingSchedule')) { openReadingScheduleModal(); return; }
+      const jmpModal = e.target.closest('[data-jump-day-modal]');
+      if (jmpModal) {
+        state.selectedDay = Number(jmpModal.dataset.jumpDayModal);
+        state.activeTab = 'home';
+        closeModal();
+        saveState();
+        render();
+        return;
+      }
+      const mfilt = e.target.closest('[data-user-mfilter]');
+      if (mfilt) { state.adminUserFilter = mfilt.dataset.userMfilter; render(); return; }
+      if (e.target.closest('#btnRefreshUsers') && sb) {
+        const { data: allU } = await sb.rpc('get_all_users_for_admin');
+        if (Array.isArray(allU)) { liveAllUsersCache = allU; render(); showToast('تم تحديث قائمة المستخدمين ✓'); }
+        else showToast('شغّل ملف update_admin_users_rpc.sql في Supabase أولًا');
+        return;
+      }
+      const promBtn = e.target.closest('[data-promote-uid]');
+      if (promBtn && sb) {
+        const uid = promBtn.dataset.promoteUid;
+        const newRole = promBtn.dataset.promoteRole;
+        const { error } = await sb.rpc('set_user_role', { target_user_id: uid, new_role: newRole });
+        if (error) {
+          showToast(`خطأ: ${error.message}`);
+        } else {
+          const { data: allU } = await sb.rpc('get_all_users_for_admin');
+          if (Array.isArray(allU)) liveAllUsersCache = allU;
+          render();
+          showToast(`تم تحديث الصلاحية إلى ${newRole === 'servant_admin' ? 'أدمن خادم' : newRole === 'super_admin' ? 'مدير نظام' : 'مستخدم'} ✓`);
+        }
+      }
+    });
+
+
+    document.addEventListener('click', (e) => {
+      const sf = e.target.closest('[data-user-sfilter]');
+      if (sf) { state.adminUserStatusFilter = sf.dataset.userSfilter; render(); return; }
+      if (e.target.closest('#btnExportUsersCsv')) {
+        if (!liveAllUsersCache.length) { showToast('لا توجد بيانات للتصدير'); return; }
+        const header = 'الاسم,الإيميل,الاجتماع,الواتساب,آخر دخول,الصلاحية\n';
+        const rows = liveAllUsersCache.map(u => [
+          `"${(u.full_name||'').replace(/"/g,'""')}"`,
+          `"${(u.email||'').replace(/"/g,'""')}"`,
+          `"${(u.meeting||'').replace(/"/g,'""')}"`,
+          `"${(u.whatsapp||'').replace(/"/g,'""')}"`,
+          `"${u.last_active_date||''}"`,
+          `"${u.role||'user'}"`
+        ].join(',')).join('\n');
+        const blob = new Blob(['\uFEFF' + header + rows], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'bethlehem_way_users.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('تم تحميل ملف المستخدمين Excel/CSV ✓');
+      }
+    });
+
+    document.addEventListener('input', (e) => {
+      if (e.target.id === 'adminUserSearchInput') {
+        state.adminUserSearch = e.target.value;
+        const pos = e.target.selectionStart;
+        render();
+        const el = document.getElementById('adminUserSearchInput');
+        if (el) { el.focus(); el.setSelectionRange(pos, pos); }
+      }
+    });
 
     render();
   </script>
