@@ -649,7 +649,12 @@
 
               <div class="space-y-1">
                 <label class="text-xs font-extrabold block">2. الباسورد</label>
-                <input id="loginPassword" type="password" required placeholder="••••••••" class="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-nativity-700" />
+                <div class="relative">
+                  <input id="loginPassword" type="password" required placeholder="••••••••" class="w-full text-xs p-2.5 pl-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-nativity-700" />
+                  <button type="button" data-toggle-pw="loginPassword" class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-nativity-800 p-1" title="إظهار / إخفاء الباسورد">
+                    <i data-lucide="eye" class="w-4 h-4"></i>
+                  </button>
+                </div>
               </div>
 
               <div class="space-y-1">
@@ -2074,16 +2079,19 @@
     // =========================================================================
     function openForgotPasswordModal() {
       openModal('استعادة كلمة السر 🔑', `
-        <p class="text-xs text-slate-600 dark:text-slate-300">اكتب الإيميل المسجّل به، وهنبعتلك رابط رسمي لتعيين كلمة سر جديدة فورًا:</p>
+        <p class="text-xs text-slate-600 dark:text-slate-300">اكتب الإيميل المسجّل به لإرسال رابط الاستعادة (تأكد من مجلد الـ Spam أيضًا):</p>
         <input id="resetEmailInput" type="email" value="${(document.getElementById('loginEmail') && document.getElementById('loginEmail').value) || ''}" placeholder="name@example.com" class="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 ltr-text text-right" />
-        <button type="button" id="btnSendResetLink" class="w-full py-2.5 rounded-xl hero-gradient text-white text-xs font-extrabold">إرسال رابط استعادة كلمة السر</button>
+        <button type="button" id="btnSendResetLink" class="w-full py-2.5 rounded-xl hero-gradient text-white text-xs font-extrabold">إرسال رابط الاستعادة بالإيميل</button>
+        <div class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-[11px] text-amber-900 dark:text-amber-200">
+          💡 لو الإيميل ما وصلش بسبب ضغط السيرفر المجاني، تواصل مع <strong>مدير النظام / خادم الاجتماع</strong> وهيغيّرلك الباسورد في 5 ثواني من لوحة التحكم.
+        </div>
       `);
     }
 
     function openNewPasswordModal() {
       openModal('تعيين كلمة سر جديدة 🔐', `
         <p class="text-xs text-slate-600 dark:text-slate-300">اكتب كلمة السر الجديدة لحسابك (6 حروف أو أرقام على الأقل):</p>
-        <input id="newPassInput" type="password" placeholder="كلمة السر الجديدة" class="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+        <div class="relative"><input id="newPassInput" type="password" placeholder="كلمة السر الجديدة" class="w-full text-xs p-2.5 pl-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" /><button type="button" data-toggle-pw="newPassInput" class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 p-1"><i data-lucide="eye" class="w-4 h-4"></i></button></div>
         <button type="button" id="btnSaveNewPassword" class="w-full py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold">حفظ كلمة السر الجديدة</button>
       `);
     }
@@ -2411,7 +2419,18 @@
             <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="muPermAnn" ${perms.announcements !== false ? 'checked' : ''} class="w-4 h-4 accent-teal-700" /><span>نشر التنبيهات العامة</span></label>
           </div>
 
-          <button type="button" id="btnSaveManageUser" data-mu-uid="${u.user_id}" class="w-full py-2.5 rounded-xl hero-gradient text-white font-extrabold">حفظ التعديلات فورًا ✓</button>
+          <button type="button" id="btnSaveManageUser" data-mu-uid="${u.user_id}" class="w-full py-2.5 rounded-xl hero-gradient text-white font-extrabold">حفظ الصلاحيات والاجتماع ✓</button>
+
+          <div class="pt-3 border-t border-slate-200 dark:border-slate-700 space-y-2">
+            <div class="font-extrabold text-rose-700 dark:text-rose-300">🔑 تغيير باسورد المستخدم (إذا نسيه):</div>
+            <div class="flex gap-1.5">
+              <div class="relative flex-1">
+                <input id="muNewPass" type="password" placeholder="باسورد جديد (6 حروف+)" class="w-full p-2 pl-8 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs" />
+                <button type="button" data-toggle-pw="muNewPass" class="absolute left-2 top-1/2 -translate-y-1/2 text-slate-500"><i data-lucide="eye" class="w-3.5 h-3.5"></i></button>
+              </div>
+              <button type="button" id="btnAdminResetPw" data-pw-uid="${u.user_id}" class="px-3 py-2 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-extrabold shrink-0">تغيير الباسورد</button>
+            </div>
+          </div>
         </div>
       `);
     }
@@ -2535,6 +2554,33 @@
         if (changed) { saveState(); render(); }
       } catch (e) {}
     }, 30000);
+
+
+    document.addEventListener('click', async (e) => {
+      const eyeBtn = e.target.closest('[data-toggle-pw]');
+      if (eyeBtn) {
+        const inp = document.getElementById(eyeBtn.dataset.togglePw);
+        if (inp) {
+          inp.type = inp.type === 'password' ? 'text' : 'password';
+          const icon = eyeBtn.querySelector('i');
+          if (icon) {
+            icon.setAttribute('data-lucide', inp.type === 'text' ? 'eye-off' : 'eye');
+            lucide.createIcons();
+          }
+        }
+        return;
+      }
+
+      const resetPwBtn = e.target.closest('#btnAdminResetPw');
+      if (resetPwBtn && sb) {
+        const uid = resetPwBtn.dataset.pwUid;
+        const newPw = (document.getElementById('muNewPass') && document.getElementById('muNewPass').value) || '';
+        if (newPw.length < 6) { showToast('اكتب باسورد من 6 حروف أو أرقام على الأقل'); return; }
+        const { error } = await sb.rpc('admin_reset_user_password', { target_user_id: uid, new_password: newPw });
+        if (error) showToast(`خطأ: ${error.message}`);
+        else { showToast('تم تغيير باسورد المستخدم بنجاح ✓'); document.getElementById('muNewPass').value = ''; }
+      }
+    });
 
     render();
   </script>
