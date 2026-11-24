@@ -286,6 +286,21 @@
     // 3. 43 SPIRITUAL DAYS (25/11/2026 – 6/1/2027) + REELS OF THE 7 FATHERS
     // =========================================================================
     const ARABIC_DAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    function getActualFastDay() {
+      const now = new Date();
+      const cairoStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Cairo' }).format(now);
+      const [y, m, d] = cairoStr.split('-').map(Number);
+      const todayUtc = Date.UTC(y, m - 1, d);
+      const startUtc = Date.UTC(2026, 10, 25); // 25 Nov 2026
+      const diff = Math.floor((todayUtc - startUtc) / 86400000) + 1;
+      return Math.max(1, Math.min(43, diff));
+    }
+
+    function getMaxUnlockedDay() {
+      if (!state.lockFutureDays || state.role === 'admin' || state.role === 'super_admin') return 43;
+      return getActualFastDay();
+    }
+
     function getDateForDay(dayNum) {
       const start = new Date(2026, 10, 25);
       const d = new Date(start.getTime() + (dayNum - 1) * 86400000);
@@ -763,7 +778,7 @@
             </div>
             <p class="text-[11px] text-teal-700 dark:text-teal-300 font-semibold mt-1">${d.phase} • إنجاز اليوم: ${dayDone}/5</p>
           </div>
-          <button type="button" id="btnNextDay" ${d.day >= 43 ? 'disabled' : ''} class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 disabled:opacity-40"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+          <button type="button" id="btnNextDay" ${d.day >= getMaxUnlockedDay() ? 'disabled' : ''} class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 disabled:opacity-40"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
         </section>
 
         <!-- 0. Daily Reading from PDF Plan ("الطريق إلى الميلاد") -->
@@ -915,7 +930,8 @@
       const board = getLiveLeaderboard();
       const top3 = board.slice(0, 3);
       const myRank = board.findIndex(x => x.isMe) + 1;
-      const activeQDay = state.quizDay || state.selectedDay || 1;
+      const maxQDay = getMaxUnlockedDay();
+      const activeQDay = Math.min(state.quizDay || state.selectedDay || 1, maxQDay);
       const dayReading = DAYS_DATA[activeQDay - 1] ? DAYS_DATA[activeQDay - 1].reading : { ref: '', desc: '' };
       const dayQs = COMPETITION_BANK.filter(q => q.day === activeQDay);
       const mcqs = dayQs.filter(q => q.type === 'mcq');
@@ -993,12 +1009,15 @@
               <div class="text-[11px] text-teal-700 dark:text-teal-300 font-bold">${dayReading.desc}</div>
               <div class="text-[10.5px] text-slate-500 mt-0.5">حلّيت ${dayAnsweredCount}/10 • صح: ${dayCorrectCount}</div>
             </div>
-            <button type="button" id="btnQuizNextDay" ${activeQDay >= 43 ? 'disabled' : ''} class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 disabled:opacity-40"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+            <button type="button" id="btnQuizNextDay" ${activeQDay >= maxQDay ? 'disabled' : ''} class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 disabled:opacity-40"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
           </div>
           <div class="flex gap-1 overflow-x-auto hide-scrollbar pt-1">
-            ${DAYS_DATA.map(d => `
-              <button type="button" data-quiz-day="${d.day}" class="px-2.5 py-1 rounded-lg text-[10.5px] font-bold shrink-0 ${activeQDay === d.day ? 'bg-purple-700 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'}">${d.day}</button>
-            `).join('')}
+            ${DAYS_DATA.map(d => {
+              const qLocked = d.day > maxQDay;
+              return `
+                <button type="button" ${qLocked ? 'disabled' : ''} data-quiz-day="${d.day}" class="px-2.5 py-1 rounded-lg text-[10.5px] font-bold shrink-0 ${activeQDay === d.day ? 'bg-purple-700 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'} ${qLocked ? 'opacity-40 cursor-not-allowed' : ''}">${qLocked ? '🔒' + d.day : d.day}</button>
+              `;
+            }).join('')}
           </div>
         </section>
 
@@ -1186,7 +1205,7 @@
               <div class="grid grid-cols-7 gap-1.5">
                 ${w.days.map(d => {
                   const done = getDayCompletion(d.day);
-                  const locked = state.lockFutureDays && d.day > state.selectedDay && state.role === 'user';
+                  const locked = d.day > getMaxUnlockedDay();
                   let cls = 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-transparent';
                   if (done === 5) cls = 'bg-emerald-600 text-white border-emerald-500';
                   else if (done > 0) cls = 'bg-amber-100 dark:bg-amber-900/50 text-amber-900 dark:text-amber-100 border-amber-400';
@@ -1710,7 +1729,7 @@
       if (e.target.closest('#btnOpenCert') || e.target.closest('#btnJourneyCert')) { openCertificateModal(); return; }
       if (e.target.closest('#btnPrevDay') && state.selectedDay > 1) { state.selectedDay--; saveState(); render(); return; }
       if (e.target.closest('#btnNextDay') && state.selectedDay < 43) {
-        if (state.lockFutureDays && state.role === 'user') { showToast('مدير النظام فعّل قفل الأيام المستقبلية'); return; }
+        if (state.selectedDay >= getMaxUnlockedDay()) { showToast('مدير النظام فعّل قفل الأيام المستقبلية — التزام يوم بيوم 🔒'); return; }
         state.selectedDay++; saveState(); render(); return;
       }
       const jump = e.target.closest('[data-jump-day]');
@@ -1736,6 +1755,11 @@
       const compOpt = e.target.closest('[data-comp-q]');
       if (compOpt) {
         const qId = compOpt.dataset.compQ;
+        const qCheck = COMPETITION_BANK.find(x => x.id === qId);
+        if (qCheck && qCheck.day > getMaxUnlockedDay()) {
+          showToast('لا يمكن حل مسابقة يوم مستقبلي 🔒');
+          return;
+        }
         if (state.quizAnswers[qId] !== undefined) {
           showToast('تم تثبيت إجابتك لهذا السؤال ولا يمكن تغييرها 🔒');
           return;
@@ -2477,12 +2501,21 @@
         saveState(); render(); return;
       }
       if (e.target.closest('#btnQuizNextDay') && (state.quizDay || 1) < 43) {
+        if ((state.quizDay || 1) >= getMaxUnlockedDay()) {
+          showToast('المسابقة مقفولة يوم بيوم 🔒 — انتظر فتح اليوم التالي');
+          return;
+        }
         state.quizDay = (state.quizDay || 1) + 1;
         saveState(); render(); return;
       }
       const qd = e.target.closest('[data-quiz-day]');
       if (qd) {
-        state.quizDay = Number(qd.dataset.quizDay);
+        const targetD = Number(qd.dataset.quizDay);
+        if (targetD > getMaxUnlockedDay()) {
+          showToast('هذا اليوم لم يفتح بعد (نظام يوم بيوم) 🔒');
+          return;
+        }
+        state.quizDay = targetD;
         saveState(); render(); return;
       }
     });
