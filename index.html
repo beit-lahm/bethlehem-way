@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>On a Mission – صوم الميلاد المجيد (رحلة 43 يومًا)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            arabic: ['Cairo', 'system-ui', 'sans-serif'],
+            latin: ['Inter', 'system-ui', 'sans-serif']
+          },
+          colors: {
+            cream: '#FAF7F2',
+            nativity: {
+              900: '#092438',
+              800: '#0E3A56',
+              700: '#15546E',
+              600: '#1C6E85',
+              gold: '#D4A24C',
+              goldLight: '#F6E7C8'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+      background-color: #EFECE6;
+      -webkit-tap-highlight-color: transparent;
+    }
+    html.dark body { background-color: #07111A; }
+    .font-size-sm { font-size: 13.5px; }
+    .font-size-md { font-size: 15px; }
+    .font-size-lg { font-size: 17px; }
+    .hero-gradient { background: linear-gradient(135deg, #092438 0%, #134C66 55%, #1A697D 100%); }
+    .gold-gradient { background: linear-gradient(135deg, #D4A24C 0%, #E7BE73 100%); }
+    .card-shadow { box-shadow: 0 6px 20px -6px rgba(9, 36, 56, 0.12); }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .ltr-text { direction: ltr; unicode-bidi: embed; font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="font-size-md text-slate-800 dark:text-slate-100 antialiased min-h-screen flex justify-center">
+  <!-- App Shell -->
+  <div id="appShell" class="w-full max-w-md min-h-screen bg-cream dark:bg-[#0D1720] shadow-2xl relative flex flex-col border-x border-slate-200/70 dark:border-slate-800/80">
+    <!-- Top Header (Hidden on Login) -->
+    <header id="topHeader" class="hidden sticky top-0 z-30 bg-cream/95 dark:bg-[#0D1720]/95 backdrop-blur border-b border-slate-200/80 dark:border-slate-800 px-3.5 py-2.5 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <div class="w-8 h-8 rounded-xl hero-gradient flex items-center justify-center text-nativity-gold shadow-sm shrink-0">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-1.5">
+            <span class="font-extrabold text-sm text-nativity-900 dark:text-white ltr-text truncate">On a Mission</span>
+            <span id="roleBadge" class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-teal-100 text-teal-800 shrink-0">مستخدم</span>
+          </div>
+          <p id="headerMeetingLabel" class="text-[11px] text-slate-500 dark:text-slate-400 truncate">صوم الميلاد • 43 يومًا</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-1 shrink-0">
+        <button id="btnSosTop" type="button" class="text-[11px] font-extrabold px-2 py-1.5 rounded-lg bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-200 hover:bg-rose-200 transition flex items-center gap-1" title="طوارئ روحية">
+          <i data-lucide="life-buoy" class="w-3.5 h-3.5"></i>
+          <span>طوارئ</span>
+        </button>
+        <button id="btnQuickRole" type="button" class="text-[11px] font-bold px-2 py-1.5 rounded-lg bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-300/70 transition flex items-center gap-1" title="تبديل الصلاحية">
+          <i data-lucide="shield" class="w-3.5 h-3.5 text-nativity-700 dark:text-nativity-gold"></i>
+        </button>
+        <button id="btnDarkToggle" type="button" class="p-1.5 rounded-lg bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-amber-300 transition" title="الوضع الليلي">
+          <i id="darkIcon" data-lucide="moon" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Announcement Banner -->
+    <div id="announcementBanner" class="hidden mx-4 mt-3 px-3.5 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/70 text-amber-900 dark:text-amber-100 text-xs flex items-start gap-2">
+      <i data-lucide="megaphone" class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5"></i>
+      <div class="flex-1"><span class="font-bold">تنبيه: </span><span id="announcementText"></span></div>
+    </div>
+
+    <!-- Main Container -->
+    <main id="mainContent" class="flex-1 px-4 pt-3 pb-24 space-y-4 overflow-y-auto"></main>
+
+    <!-- Bottom Fixed Navigation (6 Tabs, Hidden on Login) -->
+    <nav id="bottomNav" class="hidden fixed bottom-0 w-full max-w-md z-30 bg-white/95 dark:bg-[#0B141C]/95 backdrop-blur border-t border-slate-200 dark:border-slate-800 px-1 py-1.5 grid grid-cols-6 gap-0.5">
+      <button type="button" data-tab="home" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[10.5px] font-bold transition">
+        <i data-lucide="home" class="w-4 h-4 mb-0.5"></i><span>الرئيسية</span>
+      </button>
+      <button type="button" data-tab="journey" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[10.5px] font-bold transition">
+        <i data-lucide="calendar-days" class="w-4 h-4 mb-0.5"></i><span>الرحلة</span>
+      </button>
+      <button type="button" data-tab="courses" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[10.5px] font-bold transition">
+        <i data-lucide="graduation-cap" class="w-4 h-4 mb-0.5"></i><span>الكورسات</span>
+      </button>
+      <button type="button" data-tab="quiz" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[10.5px] font-bold transition">
+        <i data-lucide="trophy" class="w-4 h-4 mb-0.5"></i><span>مسابقات</span>
+      </button>
+      <button type="button" data-tab="attendance" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[10.5px] font-bold transition">
+        <i data-lucide="check-square" class="w-4 h-4 mb-0.5"></i><span>حضور</span>
+      </button>
+      <button type="button" data-tab="settings" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[10.5px] font-bold transition">
+        <i data-lucide="sliders" class="w-4 h-4 mb-0.5"></i><span>تحكم</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalOverlay" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
+    <div id="modalCard" class="w-full max-w-md max-h-[88vh] overflow-y-auto bg-white dark:bg-[#11202D] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+        <h3 id="modalTitle" class="font-extrabold text-base text-nativity-900 dark:text-white"></h3>
+        <button id="btnCloseModal" type="button" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="modalBody" class="space-y-3 text-sm leading-relaxed"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl bg-nativity-900 text-white text-xs font-bold shadow-xl border border-nativity-gold/40 flex items-center gap-2 max-w-[90%]">
+    <i data-lucide="check-circle-2" class="w-4 h-4 text-nativity-gold shrink-0"></i>
+    <span id="toastMsg"></span>
+  </div>
+
+  <script>
+
+    // =========================================================================
+    // 0. SUPABASE FREE CONNECTION (ضع رابط ومفتاح مشروعك من Supabase -> API)
+    // =========================================================================
+    const SUPABASE_URL = 'https://mwtbtttizpqzvchqtdeq.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_a-TQkp0fyxjp4xYgfUraIg_6BarYkF5';
+    const IS_SUPABASE_CONFIGURED =
+      SUPABASE_URL.startsWith('https://') &&
+      !SUPABASE_URL.includes('YOUR_SUPABASE_URL') &&
+      SUPABASE_ANON_KEY.length > 20 &&
+      typeof window.supabase !== 'undefined';
+    const sb = IS_SUPABASE_CONFIGURED
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
+    let liveLeaderboardCache = null;
+    let liveMeetingStatsCache = null;
+    let liveInactiveWaCache = null;
+
+    // =========================================================================
+    // 1. VERIFIED ORTHODOX SOURCES + 7 FATHERS REELS (60–90s)
+    // =========================================================================
+    const MEETINGS = ['مارمينا خريجين', 'الملاك ميخائيل جامعة', 'القديس أغسطينوس'];
+
+    const SOURCES = {
+      fastRite: { name: 'موقع الأنبا تكلا هيمانوت – طقس صوم الميلاد', url: 'https://st-takla.org/Coptic-Faith-Creed-Dogma/Coptic-Rite-n-Ritual-Taks-Al-Kanisa/Orthodox-Rites-n-Rituals-003-Christmas-Fast.html' },
+      moses40: { name: 'موقع الأنبا تكلا هيمانوت – صوم الميلاد وصوم موسى', url: 'https://st-takla.org/books/fr-bishoy-fayek/question-1/10.html' },
+      kiahk1: { name: 'موقع الأنبا تكلا هيمانوت – التسبحة الكيهكية', url: 'https://st-takla.org/Coptic-Faith-Creed-Dogma/Coptic-Rite-n-Ritual-Taks-Al-Kanisa/11-Tasbeha-intro-B-Biniamein/Midnight-Praise-19-Kiahkia-1.html' },
+      kiahk2: { name: 'موقع الأنبا تكلا هيمانوت – تسبحة نصف الليل في كيهك', url: 'https://st-takla.org/Coptic-Faith-Creed-Dogma/Coptic-Rite-n-Ritual-Taks-Al-Kanisa/11-Tasbeha-intro-B-Biniamein/Midnight-Praise-20-Kiahkia-2.html' },
+      athanasius: { name: 'الأنبا تكلا – تجسد الكلمة للقديس أثناسيوس', url: 'https://st-takla.org/books/fr-morcos-dawoud/incarnation-of-the-word/index.html' },
+      whyIncarnation: { name: 'الأنبا تكلا – حتمية التجسد الإلهي', url: 'https://st-takla.org/Full-Free-Coptic-Books/FreeCopticBooks-021-Sts-Church-Sidi-Beshr/002-Hatmeyat-Al-Tagasod-Al-Ilahy/Inevitability-of-the-Incarnation__17-Why.html' },
+      kesma: { name: 'الأنبا تكلا – قسمة صوم الميلاد', url: 'https://st-takla.org/Lyrics-Spiritual-Songs/Words-of-Coptic-Alhan-Tasbeha-Kodas/Arabic-Coptic-Liturgy-Lyrics/5-Al-Kesam-Prayers/04-Kesmet-Al-Milad-Wa-Sanawy.html' },
+      agpeya: { name: 'موقع الأنبا تكلا – الأجبية', url: 'https://st-takla.org/Agpeya_.html' },
+      baker: { name: 'الأجبية – صلاة باكر (الأنبا تكلا)', url: 'https://st-takla.org/Agpeya/Agbeya_01_Prime_.html' },
+      sext: { name: 'الأجبية – صلاة السادسة (الأنبا تكلا)', url: 'https://st-takla.org/Agpeya/Agbeya_06_Sext_.html' },
+      vespers: { name: 'الأجبية – صلاة الغروب (الأنبا تكلا)', url: 'https://st-takla.org/Agpeya/Agbeya_11_Vespers_.html' },
+      compline: { name: 'الأجبية – صلاة النوم (الأنبا تكلا)', url: 'https://st-takla.org/Agpeya/Agbeya_12_Compline_.html' },
+      isaiah7: { name: 'تفسير إشعياء 7 (الأنبا تكلا)', url: 'https://st-takla.org/pub_Bible-Interpretations/Holy-Bible-Tafsir-01-Old-Testament/Father-Tadros-Yacoub-Malaty/27-Sefr-Asheia/Tafseer-Sefr-Ash3eia2__01-Chapter-07.html' },
+      isaiah9: { name: 'تفسير إشعياء 9 (الأنبا تكلا)', url: 'https://st-takla.org/pub_Bible-Interpretations/Holy-Bible-Tafsir-01-Old-Testament/Father-Tadros-Yacoub-Malaty/27-Sefr-Asheia/Tafseer-Sefr-Ash3eia2__01-Chapter-09.html' },
+      luke1: { name: 'تفسير لوقا 1 (الأنبا تكلا)', url: 'https://st-takla.org/pub_Bible-Interpretations/Holy-Bible-Tafsir-02-New-Testament/Father-Tadros-Yacoub-Malaty/03-Enjil-Loka/Tafseer-Angil-Luca__01-Chapter-01.html' },
+      luke2: { name: 'تفسير لوقا 2 (الأنبا تكلا)', url: 'https://st-takla.org/pub_Bible-Interpretations/Holy-Bible-Tafsir-02-New-Testament/Father-Antonious-Fekry/03-Enjil-Loka/Tafseer-Angil-Luca__01-Chapter-02.html' },
+      matt1: { name: 'تفسير متى 1 (الأنبا تكلا)', url: 'https://st-takla.org/pub_Bible-Interpretations/Holy-Bible-Tafsir-02-New-Testament/Father-Tadros-Yacoub-Malaty/01-Engeel-Matta/Tafseer-Engil-Mata__01-Chapter-01.html' },
+      matt2: { name: 'تفسير متى 2 (الأنبا تكلا)', url: 'https://st-takla.org/pub_Bible-Interpretations/Holy-Bible-Tafsir-02-New-Testament/Father-Tadros-Yacoub-Malaty/01-Engeel-Matta/Tafseer-Engil-Mata__01-Chapter-02.html' },
+      youthBishopric: { name: 'إسقفية الشباب – الكورسات المتخصصة', url: 'https://corsat-youthbishopric.com/pages/viewpages.aspx?pid=4' },
+      clerical: { name: 'الكلية الإكليريكية – تراث مدرسة الإسكندرية', url: 'https://st-takla.org/Coptic-History/CopticHistory_01-Historical-Notes-on-the-Mother-Church/Christian-Church-History__052-Clergical-School-in-Cairo.html' },
+      baramoun: { name: 'الأنبا تكلا – طقس البرامون', url: 'https://st-takla.org/Coptic-Faith-Creed-Dogma/Coptic-Rite-n-Ritual-Taks-Al-Kanisa/Orthodox-Rites-n-Rituals-004-Baramoun.html' }
+    };
+
+    // Verified YouTube Reels & Short Meditations — EXCLUSIVELY the 7 Requested Fathers
+    const FATHERS_REELS = [
+      { father: 'قداسة البابا شنودة الثالث', title: 'خير لي الالتصاق بالرب (ريلز 60 ثانية)', dur: '60 ثانية', url: 'https://www.youtube.com/shorts/HQrO7rtFh90' },
+      { father: 'نيافة الأنبا موسى', title: 'بدء صوم الميلاد وبركات التجسد مع الشباب', dur: '90 ثانية', url: 'https://www.youtube.com/watch?v=YgC9pn_oXYs' },
+      { father: 'أبونا داود لمعي', title: 'نظام ربنا في تكوين الإنسان الروحي (ريلز)', dur: '75 ثانية', url: 'https://www.youtube.com/shorts/TJGy-y86zSM' },
+      { father: 'أبونا بولس جورج', title: 'تأملات فرح وسلام ميلاد السيد المسيح', dur: '90 ثانية', url: 'https://www.youtube.com/watch?v=4IR9hqMBEPA' },
+      { father: 'نيافة الأنبا رافائيل', title: 'طقس عيدي الميلاد والغطاس والأعياد السيدية', dur: '90 ثانية', url: 'https://www.youtube.com/watch?v=m8TLfUty4kk' },
+      { father: 'المتنيح الأنبا كاراس أسقف المحلة', title: 'عظة وتأمل مؤثر عن الصوم الحقيقي', dur: '90 ثانية', url: 'https://www.youtube.com/watch?v=m42EDf9EHeY' },
+      { father: 'نيافة الأنبا زوسيما', title: 'صوم المعجزات – أجمل تأمل في صوم الميلاد', dur: '90 ثانية', url: 'https://www.youtube.com/watch?v=lCVFgLvcruo' },
+      { father: 'أبونا داود لمعي', title: 'التجربة بتعمل حاجة عجيبة في القلب (ريلز)', dur: '60 ثانية', url: 'https://www.youtube.com/shorts/FPIafQgtLY4' },
+      { father: 'أبونا بولس جورج', title: 'مستعد تقابل المسيح؟ تأمل يهز قلبك', dur: '90 ثانية', url: 'https://www.youtube.com/watch?v=iNGaynMDRhQ' },
+      { father: 'قداسة البابا شنودة الثالث', title: 'أفراحنا في عيد الميلاد أفراح روحية (ريلز)', dur: '60 ثانية', url: 'https://www.youtube.com/shorts/tDe8YcoWqMk' },
+      { father: 'المتنيح الأنبا كاراس أسقف المحلة', title: 'احمل المسيح في حضنك مثل سمعان الشيخ', dur: '90 ثانية', url: 'https://www.youtube.com/watch?v=_yOcQm2nF5M' },
+      { father: 'نيافة الأنبا زوسيما', title: 'حكمة الكنيسة في الاحتفال بـ 29 كيهك', dur: '90 ثانية', url: 'https://www.youtube.com/watch?v=-HJJpISz-Ds' },
+      { father: 'أبونا داود لمعي', title: 'كلام ربنا أهم من كلام الناس (ريلز)', dur: '60 ثانية', url: 'https://www.youtube.com/shorts/W8g6hJihyEQ' },
+      { father: 'أبونا بولس جورج', title: '4 دروس روحية من السيدة العذراء مريم', dur: '90 ثانية', url: 'https://www.youtube.com/watch?v=lNUudDK-kdc' },
+      { father: 'المتنيح الأنبا كاراس أسقف المحلة', title: 'تأمل عيد الميلاد المجيد والاستعداد للسماء', dur: '90 ثانية', url: 'https://www.youtube.com/watch?v=RbFJnG3Uu1I' },
+      { father: 'نيافة الأنبا زوسيما', title: 'حكمة البرامون والاستعداد للعيد', dur: '90 ثانية', url: 'https://www.youtube.com/watch?v=JHNhi1EOmLM' },
+      { father: 'أبونا داود لمعي', title: 'تداريب عملية بسيطة لصوم الميلاد', dur: '90 ثانية', url: 'https://www.youtube.com/watch?v=9FkrrKJ7q2E' }
+    ];
+
+    // =========================================================================
+    // 2. 3 PRACTICAL MINI-COURSES (التطوير العملي) WITH EXPLANATIONS + YOUTUBE
+    // =========================================================================
+    const PRACTICAL_LESSONS = [
+      // Track 1: Marketing (Days 1–14)
+      { track: 'marketing', trackAr: 'ماركيتنج', title: 'أساسيات التسويق الحديث: القيمة قبل البيع', explain: 'التسويق ليس إعلانًا ممولًا فقط؛ بل يبدأ بفهم احتياج حقيقي لدى العميل وتقديم حل واضح له. القاعدة الذهبية: الناس لا تشتري المنتج نفسه بل تشتري النتيجة التي يوفرها المنتج في حياتهم.', drill: 'اكتب في سطرين المشكلة الحقيقية التي يحلّها منتج أو خدمة تستخدمها يوميًا.', ytTitle: 'مقدمة في التسويق الرقمي – وليد طه', ytUrl: 'https://www.youtube.com/watch?v=sbJUSPLzhQo' },
+      { track: 'marketing', trackAr: 'ماركيتنج', title: 'تحديد الجمهور المستهدف (Customer Persona)', explain: 'عندما تحاول بيع منتج للجميع، لا يشتريه أحد. الـ Persona هي بطاقة تخيلية للعميل المثالي تشمل: العمر، الوظيفة، أكثر مشكلة تزعجه، والمنصات التي يتصفحها يوميًا.', drill: 'صمّم Persona لعميل واحد محتمل لمشروع يهمك في 4 نقاط واضحة.', ytTitle: 'كورس التسويق الإلكتروني خطوة بخطوة', ytUrl: 'https://www.youtube.com/watch?v=0fvYICr7m0M' },
+      { track: 'marketing', trackAr: 'ماركيتنج', title: 'نموذج STP: التقسيم والاستهداف والتموضع', explain: 'Segmentation (تقسيم السوق لشرائح)، ثم Targeting (اختيار شريحة واحدة مربحة)، ثم Positioning (تثبيت صورة ذهنية مميزة لك عن المنافسين مثل السعر أو السرعة أو الجودة).', drill: 'اختر علامة تجارية مصرية واكتب في جملة واحدة كيف تميز نفسها.', ytTitle: 'تعلم التسويق الإلكتروني من الصفر في ساعة', ytUrl: 'https://www.youtube.com/watch?v=4ricNvHHL5o' },
+      { track: 'marketing', trackAr: 'ماركيتنج', title: 'عرض القيمة الفريد (Value Proposition)', explain: 'هو الجملة التي تقنع الزائر في أول 5 ثوانٍ بالبقاء. الصيغة العملية: «نساعد [الجمهور] على تحقيق [النتيجة الملموسة] بدون [أكبر عائق يزعجهم]».', drill: 'اكتب عرض قيمة احترافي لمهارتك أو مشروعك باستخدام الصيغة السابقة.', ytTitle: 'خارطة طريق التسويق الرقمي', ytUrl: 'https://www.youtube.com/watch?v=GFifm_fvkRk' },
+      { track: 'marketing', trackAr: 'ماركيتنج', title: 'قمع التسويق (TOFU – MOFU – BOFU)', explain: 'العميل يمر بـ 3 مراحل: الوعي (TOFU: يتعرف على المشكلة)، الاهتمام (MOFU: يقارن الحلول ويثق بك)، ثم القرار (BOFU: عرض مباشر، ضمان، ودعوة للشراء).', drill: 'اقترح فكرة بوست لمرحلة الوعي وفكرة أخرى لمرحلة اتخاذ القرار.', ytTitle: 'كورس التسويق الإلكتروني للمبتدئين', ytUrl: 'https://www.youtube.com/watch?v=STbhc0Rvzao' },
+      { track: 'marketing', trackAr: 'ماركيتنج', title: 'كتابة الإعلان المقنع (Copywriting – AIDA)', explain: 'A: جذب الانتباه بسؤال أو رقم صادم، I: إثارة الاهتمام بشرح الفائدة، D: خلق الرغبة بإثبات اجتماعي، A: دعوة واضحة لاتخاذ إجراء (CTA) مثل «ابعت رسالة الآن».', drill: 'اكتب بوست قصير من 4 أسطر بنموذج AIDA للترويج لورشة مجانية.', ytTitle: 'صناعة المحتوى وكتابة الإعلان', ytUrl: 'https://www.youtube.com/watch?v=6PMFfbxq8nc' },
+      { track: 'marketing', trackAr: 'ماركيتنج', title: 'أسلوب PAS لحل مشاكل العملاء', explain: 'ابدأ بالمشكلة (Problem)، ثم وضّح تكلفة تجاهلها (Agitate)، ثم قدم منتجك كحل مباشر وسهل (Solution). هذا الأسلوب من الأعلى تحويلًا في إعلانات السوشيال.', drill: 'حوّل ميزة تقنية في أي منتج إلى فائدة مقنعة بأسلوب PAS.', ytTitle: 'أسرار كتابة المحتوى التسويقي', ytUrl: 'https://www.youtube.com/watch?v=6PMFfbxq8nc' },
+      { track: 'marketing', trackAr: 'ماركيتنج', title: 'أعمدة المحتوى (Content Pillars)', explain: 'لا تجعل كل منشوراتك «اشتري الآن». قسّم محتواك إلى 4 أعمدة: 40% تعليمي يفيد العميل، 25% قصص ونتائج، 20% تفاعلي/كواليس، 15% عرض بيعي مباشر.', drill: 'حدد 4 أعمدة محتوى لحساب عملي على LinkedIn أو Instagram.', ytTitle: 'كورس السوشيال ميديا والتسويق', ytUrl: 'https://www.youtube.com/watch?v=GFifm_fvkRk' },
+      { track: 'marketing', trackAr: 'ماركيتنج', title: 'خوارزميات السوشيال ميديا وأول 3 ثوانٍ', explain: 'الخوارزميات تقيس وقت المشاهدة (Watch Time) ومعدل الحفظ والمشاركة (Saves & Shares). الجملة الافتتاحية (Hook) هي 80% من نجاح أي ريلز أو بوست.', drill: 'اكتب 3 جمل افتتاحية (Hooks) مختلفة لنفس الموضوع.', ytTitle: 'تعلم التسويق من الصفر لأول عميل', ytUrl: 'https://www.youtube.com/watch?v=NW-jSYB8WtU' },
+      { track: 'marketing', trackAr: 'ماركيتنج', title: 'الإعلانات الممولة (Meta & Google Ads)', explain: 'إعلانات Google تلتقط عميلًا يبحث عنك الآن (نية شراء عالية)، بينما إعلانات Meta/Instagram تخلق اهتمامًا جديدًا وتبني وعيًا بالمنتج عبر استهداف الاهتمامات.', drill: 'حدد متى تختار حملة رسائل ومتى تختار حملة تحويلات موقع.', ytTitle: 'الإعلانات الممولة خطوة بخطوة', ytUrl: 'https://www.youtube.com/watch?v=6PMFfbxq8nc' },
+      { track: 'marketing', trackAr: 'ماركيتنج', title: 'مؤشرات الأداء الأساسية (CTR, CPL, ROAS)', explain: 'CTR = نسبة النقر على الإعلان، CPL = تكلفة العميل المحتمل الواحد، ROAS = العائد على الإنفاق الإعلاني (المبيعات ÷ مصروف الإعلان). الأرقام تمنعك من خسارة الميزانية.', drill: 'احسب ROAS لحملة صرفت 2,000 جنيه وحققت مبيعات 10,000 جنيه (الإجابة: 5x).', ytTitle: 'مقدمة في التسويق الرقمي', ytUrl: 'https://www.youtube.com/watch?v=sbJUSPLzhQo' },
+      { track: 'marketing', trackAr: 'ماركيتنج', title: 'صفحات الهبوط وتحسين التحويل (CRO)', explain: 'الصفحة الناجحة تحتوي على: عنوان واضح، 3 فوائد سريعة، آراء عملاء حقيقيين، إجابة للاعتراضات، وزر إجراء واحد بلون مميز دون تشتيت.', drill: 'افتح أي صفحة منتج وحدد نقطتي قوة ونقطة تحسين واحدة.', ytTitle: 'كورس التسويق الإلكتروني 2024', ytUrl: 'https://www.youtube.com/watch?v=STbhc0Rvzao' },
+      { track: 'marketing', trackAr: 'ماركيتنج', title: 'بناء العلامة الشخصية (Personal Branding)', explain: 'كشاب أو خريج، حسابك على LinkedIn هو واجهتك العملية. شارك ما تتعلمه أسبوعيًا، وثّق مشاريعك الصغيرة، وتفاعل بتعليقات ذكية في مجالك.', drill: 'حدّث عنوانك التعريفي (Headline) على LinkedIn ليعكس القيمة التي تقدمها.', ytTitle: 'إزاي تتعلم تسويق صح لأول عميل', ytUrl: 'https://www.youtube.com/watch?v=NW-jSYB8WtU' },
+      { track: 'marketing', trackAr: 'ماركيتنج', title: 'مشروع ختام الماركيتنج: خطة صفحة واحدة', explain: 'اجمع كل ما تعلمته في ورقة واحدة: من هو العميل؟ ما عرض القيمة؟ ما قناتان أساسيتان للوصول إليه؟ وما أهم 3 مؤشرات ستقيس بها النجاح شهريًا؟', drill: 'اكتب خطة تسويق من 5 نقاط لمشروعك أو خدمتك.', ytTitle: 'تعلم التسويق الإلكتروني في ساعة', ytUrl: 'https://www.youtube.com/watch?v=4ricNvHHL5o' },
+
+      // Track 2: AI for Work (Days 15–29)
+      { track: 'ai', trackAr: 'ذكاء اصطناعي', title: 'كيف تفكر نماذج الذكاء الاصطناعي (LLMs)؟', explain: 'الذكاء الاصطناعي التوليدي ليس محرك بحث جامد، بل نموذج لغوي يتوقع الكلمات بناءً على السياق. كلما أعطيته سياقًا وهدفًا أوضح، تحولت إجابته من عامة إلى احترافية.', drill: 'جرّب سؤالًا عامًا ثم أعد كتابته بسياق محدد وقارن النتيجتين.', ytTitle: 'النماذج الكبرى وهندسة الأوامر', ytUrl: 'https://www.youtube.com/watch?v=cJZGYNFw9RI' },
+      { track: 'ai', trackAr: 'ذكاء اصطناعي', title: 'قاعدة البرومبت الاحترافي (Role-Context-Task-Format)', explain: 'لبناء أمر قوي حدد 4 عناصر: 1) الدور (أنت خبير...)، 2) السياق (أنا أعمل في...)، 3) المهمة المحددة، 4) شكل المخرج (جدول، 5 نقاط، إيميل رسمي).', drill: 'اكتب برومبت من 4 أجزاء لتنظيم جدول أسبوعك العملي والروحي.', ytTitle: 'أساسيات هندسة أوامر الذكاء الاصطناعي – وليد طه', ytUrl: 'https://www.youtube.com/watch?v=2_3WuekEg4s' },
+      { track: 'ai', trackAr: 'ذكاء اصطناعي', title: 'التوجيه بالأمثلة (Few-Shot Prompting)', explain: 'بدل شرح الأسلوب طويلًا، أعطِ النموذج مثالين من كتابتك السابقة واطلب منه إنتاج النص الجديد بنفس النبرة والطول والتنسيق.', drill: 'أعطِ الـ AI فقرة من كتابتك واطلب منه صياغة إيميل جديد بنفس الأسلوب.', ytTitle: 'كورس Prompt Engineering في أقل من 30 دقيقة', ytUrl: 'https://www.youtube.com/watch?v=1Grt4-ln-1Q' },
+      { track: 'ai', trackAr: 'ذكاء اصطناعي', title: 'التفكير خطوة بخطوة (Chain-of-Thought)', explain: 'إضافة عبارة «فكّر خطوة بخطوة واشرح المعايير قبل القرار النهائي» ترفع دقة التحليل المنطقي والقرارات العملية بشكل كبير.', drill: 'استخدمه للمقارنة بين خيارين عمليين بناءً على 4 معايير.', ytTitle: 'تعلم مهارة كتابة الأوامر للذكاء الاصطناعي', ytUrl: 'https://www.youtube.com/watch?v=Q1Sh00SGdvI' },
+      { track: 'ai', trackAr: 'ذكاء اصطناعي', title: 'تلخيص المستندات والاجتماعات بذكاء', explain: 'اطلب منه دائمًا تقسيم الملخص إلى: (أهم 3 قرارات + قائمة المهام Action Items + المسؤول والموعد النهائي) بدل فقرة طويلة مملة.', drill: 'لخّص مقالًا أو محضر اجتماع طويل في 5 نقاط تنفيذية.', ytTitle: 'هندسة الأوامر لمضاعفة إنتاجيتك', ytUrl: 'https://www.youtube.com/watch?v=HNVJHTeLIjg' },
+      { track: 'ai', trackAr: 'ذكاء اصطناعي', title: 'صياغة وتحسين الإيميلات العملية بالـ AI', explain: 'يمكنك كتابة أفكارك بالعامية وطلب تحويلها لإيميل رسمي أو ودي بالعربية أو الإنجليزية مع خيارين: مختصر وتفصيلي.', drill: 'حوّل 3 ملاحظات سريعة إلى إيميل متابعة منظم.', ytTitle: 'كتابة البرومبت لزيادة الإنتاجية', ytUrl: 'https://www.youtube.com/watch?v=SEwkCSWUoD8' },
+      { track: 'ai', trackAr: 'ذكاء اصطناعي', title: 'الذكاء الاصطناعي مع Excel وجداول البيانات', explain: 'صف للـ AI أسماء الأعمدة والنتيجة المطلوبة، وسيكتب لك معادلات XLOOKUP وSUMIFS وIF المتداخلة فورًا مع شرح كل جزء.', drill: 'اطلب معادلة Excel تحسب نسبة الإنجاز وتصنّف الحالة إلى «مكتمل / متأخر».', ytTitle: 'كورس هندسة التلقين MasterClass', ytUrl: 'https://www.youtube.com/watch?v=gZv5hFW3OF8' },
+      { track: 'ai', trackAr: 'ذكاء اصطناعي', title: 'هيكلة العروض التقديمية والـ Slides', explain: 'اطلب منه أولًا «هيكل شرائح (Outline) بعناوين قوية و3 نقاط مختصرة لكل شريحة + اقتراح رسم بياني» قبل فتح PowerPoint.', drill: 'اطلب هيكل عرض من 6 شرائح يشرح مشروعًا أو إنجازًا لك.', ytTitle: 'هندسة الأوامر للنتائج الاحترافية', ytUrl: 'https://www.youtube.com/watch?v=HNVJHTeLIjg' },
+      { track: 'ai', trackAr: 'ذكاء اصطناعي', title: 'التحقق من الهلوسة (Fact-Checking)', explain: 'نماذج الـ AI قد تؤلّف أرقامًا أو مراجع تبدو مقنعة لكنها غير صحيحة. القاعدة العملية: استعن به في الصياغة والتنظيم، وتحقق دائمًا من المصادر الرسمية.', drill: 'راجع معلومة أو رقمًا من الـ AI وتأكد من مصدره الأصلي.', ytTitle: 'تحسين البرومبت بالتكرار Iteration', ytUrl: 'https://www.youtube.com/watch?v=YHAxLelTr0k' },
+      { track: 'ai', trackAr: 'ذكاء اصطناعي', title: 'توليد أفكار التسويق والمحتوى بالـ AI', explain: 'اربط ما تعلمته في كورس الماركيتنج بالـ AI: أعطه الـ Persona واطلب 5 Hooks وإعلانات بنموذج AIDA وPAS للاختبار.', drill: 'اطلب 5 أفكار محتوى لجمهور محدد مع CTA مناسب لكل فكرة.', ytTitle: 'أساسيات هندسة الأوامر – وليد طه', ytUrl: 'https://www.youtube.com/watch?v=2_3WuekEg4s' },
+      { track: 'ai', trackAr: 'ذكاء اصطناعي', title: 'أتمتة المهام المتكررة (Apps Script & No-Code)', explain: 'حتى بدون خبرة برمجية عميقة، يمكنك وصف مهمة متكررة في Google Sheets ليولّد لك كود Apps Script يختصر ساعات أسبوعيًا.', drill: 'حدد مهمة متكررة في يومك واسأل الـ AI كيف تختصر وقتها للنصف.', ytTitle: 'كورس Prompt Engineering في أقل من 30 دقيقة', ytUrl: 'https://www.youtube.com/watch?v=1Grt4-ln-1Q' },
+      { track: 'ai', trackAr: 'ذكاء اصطناعي', title: 'الـ AI كمدرب شخصي ومحاكاة مقابلات العمل', explain: 'اطلب منه تقمّص دور مدير توظيف يسألك سؤالًا تلو الآخر ثم يقيّم إجابتك ويقترح نسخة أقوى.', drill: 'أجرِ مقابلة تجريبية من 3 أسئلة واطلب تقييمًا لنقاط التحسين.', ytTitle: 'كتابة البرومبت لزيادة الإنتاجية', ytUrl: 'https://www.youtube.com/watch?v=SEwkCSWUoD8' },
+      { track: 'ai', trackAr: 'ذكاء اصطناعي', title: 'الخصوصية وأمان البيانات مع أدوات الـ AI', explain: 'لا تضع أبدًا كلمات سر، أرقام قومية، بيانات عملاء سرية، أو عقودًا خاصة كما هي؛ استبدل الأسماء والأرقام برموز (Anonymization) أولًا.', drill: 'طبّق قاعدة إخفاء الأسماء الحقيقية قبل تلخيص أي مستند عمل.', ytTitle: 'النماذج الكبرى وهندسة الأوامر', ytUrl: 'https://www.youtube.com/watch?v=cJZGYNFw9RI' },
+      { track: 'ai', trackAr: 'ذكاء اصطناعي', title: 'بناء مكتبة برومبتات خاصة بمجالك', explain: 'بدل إعادة كتابة الأوامر كل يوم، احفظ أفضل 5 برومبتات مجرّبة في ملف واحد على Google Docs أو Keep لاستخدامها في ثوانٍ.', drill: 'اجمع 3 قوالب برومبت جاهزة ستستخدمها الأسبوع القادم.', ytTitle: 'تعلم كتابة البرومبت باحتراف', ytUrl: 'https://www.youtube.com/watch?v=YHAxLelTr0k' },
+      { track: 'ai', trackAr: 'ذكاء اصطناعي', title: 'مشروع ختام الـ AI: تصميم روتين عمل ذكي', explain: 'ارسم خطوات مهمة يومية (إدخال ← مساعدة AI ← مراجعة بشرية نهائية) توفر لك 30 دقيقة يوميًا مع الحفاظ على جودتك وأسلوبك.', drill: 'وثّق Workflow واحد من 3 خطوات وطبّقه غدًا.', ytTitle: 'كورس هندسة التلقين الكامل', ytUrl: 'https://www.youtube.com/watch?v=gZv5hFW3OF8' },
+
+      // Track 3: Practical Business English (Days 30–43)
+      { track: 'english', trackAr: 'لغة إنجليزية', title: 'التعريف العملي بالنفس (Elevator Pitch)', explain: 'صيغة واثقة في 30 ثانية: <span class="ltr-text font-semibold">"Hi, I’m [Name]. I work in [Field], focusing on [Skill]. Currently, I’m building my experience in [Goal]."</span> استخدم جملًا قصيرة وواضحة.', drill: 'سجّل لنفسك صوتًا لمدة 30 ثانية تعرّف فيها نفسك بالإنجليزية بصوت مسموع.', ytTitle: 'أهم الكلمات الإنجليزية للأعمال Business English', ytUrl: 'https://www.youtube.com/watch?v=AQ3D_t_ZzSU' },
+      { track: 'english', trackAr: 'لغة إنجليزية', title: 'افتتاحيات وختاميات الإيميل الاحترافي', explain: 'للبداية: <span class="ltr-text font-semibold">"I hope this email finds you well."</span> وللغرض: <span class="ltr-text font-semibold">"I’m reaching out regarding..."</span> وللختام: <span class="ltr-text font-semibold">"Please let me know if you need any further details. Best regards."</span>', drill: 'اكتب إيميلًا من 4 جمل لطلب موعد اجتماع (Meeting Request).', ytTitle: 'تعلم الإنجليزية العملية للعمل', ytUrl: 'https://www.youtube.com/shorts/G-kU2lglNzM' },
+      { track: 'english', trackAr: 'لغة إنجليزية', title: 'لغة المتابعة المهذبة (Polite Follow-Up)', explain: 'بدل الإلحاح الجاف، استخدم: <span class="ltr-text font-semibold">"Just following up on my previous email regarding..."</span> أو <span class="ltr-text font-semibold">"I wanted to gently check in on the status of..."</span>', drill: 'اكتب رسالة متابعة مهذبة لإيميل أرسلته منذ 3 أيام.', ytTitle: 'محادثات Business English الرسمية', ytUrl: 'https://www.youtube.com/watch?v=tfl9i3XYurI' },
+      { track: 'english', trackAr: 'لغة إنجليزية', title: 'إدارة الاجتماعات الأونلاين (Online Meetings)', explain: 'للبداية: <span class="ltr-text font-semibold">"Let’s get started."</span> للإضافة بأدب: <span class="ltr-text font-semibold">"May I add a quick point here?"</span> للتلخيص: <span class="ltr-text font-semibold">"To wrap up, our next steps are..."</span>', drill: 'انطق بصوت عالٍ 3 جمل لافتتاح اجتماع وتلخيص القرارات.', ytTitle: 'محادثات العمل الرسمية بالإنجليزية', ytUrl: 'https://www.youtube.com/watch?v=tfl9i3XYurI' },
+      { track: 'english', trackAr: 'لغة إنجليزية', title: 'تقديم الأفكار والاقتراحات بثقة', explain: 'استخدم تراكيب عملية: <span class="ltr-text font-semibold">"From my perspective..."</span> و<span class="ltr-text font-semibold">"One option we could consider is..."</span> و<span class="ltr-text font-semibold">"The main advantage is..."</span>', drill: 'قدّم اقتراحًا لتحسين خطوة في عملك في 3 جمل إنجليزية.', ytTitle: 'تدريب الاستماع والمحادثة B1-B2', ytUrl: 'https://www.youtube.com/watch?v=gVtqUZRSTlc' },
+      { track: 'english', trackAr: 'لغة إنجليزية', title: 'الاختلاف العملي بأدب (Polite Disagreement)', explain: 'لا تقل <span class="ltr-text">"You are wrong"</span>؛ قل بدلًا منها: <span class="ltr-text font-semibold">"I see your point; however, we might also consider..."</span> أو <span class="ltr-text font-semibold">"That’s a valid concern, and at the same time..."</span>', drill: 'أعد صياغة اعتراضين شائعين بأسلوب عملي هادئ.', ytTitle: 'تعبيرات إنجليزية متقدمة للعمل – Shadowing', ytUrl: 'https://www.youtube.com/watch?v=rnUgF_7BWms' },
+      { track: 'english', trackAr: 'لغة إنجليزية', title: 'الأفعال القوية في السيرة الذاتية (CV Action Verbs)', explain: 'استبدل الأفعال الضعيفة (<span class="ltr-text">Did / Worked on</span>) بأفعال إنجاز: <span class="ltr-text font-semibold">Implemented, Streamlined, Automated, Coordinated, Reduced, Delivered</span> متبوعة برقم ملموس.', drill: 'أعد كتابة سطرين في الـ CV باستخدام Action Verb ورقم.', ytTitle: 'الإنجليزية العملية لخدمة العملاء والإنترفيو', ytUrl: 'https://www.youtube.com/watch?v=yInUTRmXs3A' },
+      { track: 'english', trackAr: 'لغة إنجليزية', title: 'أسئلة مقابلات العمل (STAR Method)', explain: 'رتّب إجابتك في 4 خطوات: <span class="ltr-text font-semibold">Situation</span> (الموقف)، <span class="ltr-text font-semibold">Task</span> (المطلوب)، <span class="ltr-text font-semibold">Action</span> (ما فعلته أنت)، <span class="ltr-text font-semibold">Result</span> (النتيجة).', drill: 'اكتب قصة إنجاز واحدة من 4 جمل بطريقة STAR.', ytTitle: 'الإنجليزية العملية والإنترفيو', ytUrl: 'https://www.youtube.com/watch?v=yInUTRmXs3A' },
+      { track: 'english', trackAr: 'لغة إنجليزية', title: 'عرض التقارير والأرقام (Presenting Data)', explain: 'لوصف النتائج: <span class="ltr-text font-semibold">"Sales increased by 15% compared to last month"</span>، <span class="ltr-text font-semibold">"Remained steady"</span>، <span class="ltr-text font-semibold">"The key takeaway is..."</span>', drill: 'صف رقمًا أو نتيجة من عملك بجملتين إنجليزيتين واضحتين.', ytTitle: 'أهم كلمات Business English', ytUrl: 'https://www.youtube.com/watch?v=AQ3D_t_ZzSU' },
+      { track: 'english', trackAr: 'لغة إنجليزية', title: 'التفاوض والمواعيد النهائية (Deadlines)', explain: 'لطلب وقت إضافي بوضوح: <span class="ltr-text font-semibold">"To ensure high quality, would it be possible to extend the deadline to Thursday?"</span>', drill: 'اكتب رسالة قصيرة تطلب فيها يومًا إضافيًا لتسليم مهمة بجودة أعلى.', ytTitle: 'محادثات Business English الرسمية', ytUrl: 'https://www.youtube.com/watch?v=tfl9i3XYurI' },
+      { track: 'english', trackAr: 'لغة إنجليزية', title: 'تكنيك الظل للنطق والطلاقة (Shadowing 1)', explain: 'شغّل الفيديو، استمع لجملة قصيرة، وردّدها فورًا بنفس الإيقاع والنبرة دون ترجمة داخلية. 5 دقائق يوميًا تصنع فارقًا هائلًا في الطلاقة.', drill: 'طبّق 5 دقائق Shadowing الآن مع الفيديو المرفق.', ytTitle: 'تطبيق Shadowing عملي – اليوم 1', ytUrl: 'https://www.youtube.com/watch?v=_32Br6HyCi0' },
+      { track: 'english', trackAr: 'لغة إنجليزية', title: 'تصحيح أخطاء شائعة في إنجليزية العمل', explain: 'قل <span class="ltr-text font-semibold">Reply</span> (وليس <span class="ltr-text">Reply back</span>)، قل <span class="ltr-text font-semibold">Discuss the plan</span> (وليس <span class="ltr-text">Discuss about</span>)، وقل <span class="ltr-text font-semibold">Please find attached</span> بدل العبارات القديمة المعقدة.', drill: 'صحّح 3 جمل إنجليزية شائعة واكتبها بالشكل الطبيعي.', ytTitle: '5 دقائق Shadowing لجمل يومية', ytUrl: 'https://www.youtube.com/watch?v=jsvUXOnRQ7E' },
+      { track: 'english', trackAr: 'لغة إنجليزية', title: 'الحديث القصير وبناء العلاقات (Small Talk)', explain: 'قبل الدخول في العمل مباشرة: <span class="ltr-text font-semibold">"How has your week been so far?"</span> و<span class="ltr-text font-semibold">"Thanks for making time today."</span>', drill: 'تدرّب بصوت عالٍ مع فيديو الـ Shadowing لمدة 10 دقائق.', ytTitle: '10 دقائق Shadowing لتحسين النطق', ytUrl: 'https://www.youtube.com/watch?v=TlWjfSsd_H8' },
+      { track: 'english', trackAr: 'لغة إنجليزية', title: 'مشروع ختام الإنجليزي: محاكاة شاملة', explain: 'ادمج ما تعلمته: 1) قدم نفسك في جملتين، 2) اعرض فكرة عملية، 3) اختم بإيميل متابعة مهذب. هكذا تخرج من الصوم بثقة حقيقية في التواصل.', drill: 'اكتب 6 جمل بالإنجليزية تلخص أهم ما تعلمته في الـ 43 يومًا.', ytTitle: 'Shadowing متقدم لتعبيرات العمل', ytUrl: 'https://www.youtube.com/watch?v=rnUgF_7BWms' }
+    ];
+
+    // =========================================================================
+    // 3. 43 SPIRITUAL DAYS (25/11/2026 – 6/1/2027) + REELS OF THE 7 FATHERS
+    // =========================================================================
+    const ARABIC_DAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    function getDateForDay(dayNum) {
+      const start = new Date(2026, 10, 25);
+      const d = new Date(start.getTime() + (dayNum - 1) * 86400000);
+      const dd = d.getDate(), mm = d.getMonth() + 1, yyyy = d.getFullYear();
+      return {
+        label: `${ARABIC_DAYS[d.getDay()]} ${dd}/${mm}/${yyyy}`,
+        short: `${dd}/${mm}`,
+        iso: `${yyyy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`
+      };
+    }
+
+    const SPIRITUAL_SEED = [
+      { phase: 'الأسبوع 1: الاستعداد والتوبة', ref: 'خروج 24: 12-18', med: 'كما صام موسى 40 يومًا ليستلم كلمة الله المكتوبة، نصوم 40 يومًا لنستقبل الكلمة المتجسد بقلب نقي.', pray: 'صلاة باكر: قدّم بداية الصوم للرب واطلب التزامًا حقيقيًا.', praySrc: 'baker', teach: 'صوم الميلاد 43 يومًا: 40 يومًا كموسى النبي + 3 أيام تذكارًا لمعجزة نقل جبل المقطم في عهد البابا أبرام بن زرعة.', src: 'fastRite' },
+      { phase: 'الأسبوع 1: الاستعداد والتوبة', ref: 'متى 17: 14-21', med: 'الإيمان الحي بحجم حبة خردل ينقل الجبال؛ الله لا يطلب إمكانيات خارقة بل قلبًا واثقًا.', pray: 'صلاة السادسة: صلِّ من أجل إيمان ثابت وسط تحديات اليوم.', praySrc: 'sext', teach: 'ثلاثة أيام المقطم تذكّرنا بقوة الصلاة والصوم الجماعي حين صامت الكنيسة كلها مع القديس سمعان الخراز.', src: 'fastRite' },
+      { phase: 'الأسبوع 1: الاستعداد والتوبة', ref: 'مزمور 51: 1-12', med: 'التوبة هي المذود النظيف الذي نُعدّه لاستقبال الملك. "قلبًا نقيًا اخلق فيَّ يا الله".', pray: 'صلاة النوم: افحص ضميرك بهدوء واكتب نقطة توبة صادقة.', praySrc: 'compline', teach: 'صوم الميلاد من أصوام الدرجة الثانية (يُسمح بالسمك عدا الأربعاء والجمعة والبرامون) بطابع فرح وخشوع معًا.', src: 'fastRite' },
+      { phase: 'الأسبوع 1: الاستعداد والتوبة', ref: 'متى 6: 16-21', med: 'الصوم الحقيقي يغيّر القلب وليس المظهر؛ هو تدريب عملي على ضبط النفس وتقديم الأولوية لله.', pray: 'صلاة الغروب: قدّم صومك في الخفاء واشكر الله على نعمه.', praySrc: 'vespers', teach: 'من بداية الصوم حتى أول كيهك تُصلي الكنيسة بالألحان السنوية مع إضافة قسمة صوم الميلاد وجملة الختام الخاصة به.', src: 'kesma' },
+      { phase: 'الأسبوع 1: الاستعداد والتوبة', ref: 'أفسس 5: 15-20', med: 'افتداء الوقت فضيلة روحية وعملية معًا؛ الشاب الأرثوذكسي أمين في وقته وصلاته وعمله.', pray: 'صلاة باكر: اطلب حكمة في تنظيم يومك بين الصلاة والكورسات.', praySrc: 'baker', teach: 'في منهج إسقفية الشباب للقيادة وإدارة الحياة، تبدأ «إدارة الالتزام» بوضع الله مركزًا لجدولك اليومي.', src: 'youthBishopric' },
+      { phase: 'الأسبوع 1: الاستعداد والتوبة', ref: 'يوحنا 1: 1-5', med: 'المسيح هو النور الحقيقي الذي يضيء في الظلمة؛ كلما اقتربت منه يتبدد القلق.', pray: 'صلاة النوم: سلّم مخاوفك للنور الحقيقي وردد صلاة يسوع.', praySrc: 'compline', teach: 'قسمة صوم الميلاد تعلن أن الآب أرسل «نوره الحقيقي ابنه الوحيد يسوع المسيح الكلمة الذاتي الكائن في حضنه الأبوي كل حين».', src: 'kesma' },
+      { phase: 'الأسبوع 1: الاستعداد والتوبة', ref: 'إشعياء 1: 16-20', med: 'نهاية الأسبوع الأول دعوة لتجديد العهد: إن سقطت يومًا، قم سريعًا وكمل الرحلة.', pray: 'الأجبية: استعد لحضور القداس والتناول بقلب تائب.', praySrc: 'agpeya', teach: 'تُعدّ الكنيسة أبناءها خلال الصوم ليشاركوا الملائكة عرس السماء والأرض بطفل المذود.', src: 'moses40' },
+
+      { phase: 'الأسبوع 2: نبوات العهد القديم', ref: 'تكوين 3: 15', med: 'منذ لحظة السقوط أعطى الله أول بشارة بالخلاص: "نسل المرأة يسحق رأس الحية".', pray: 'صلاة باكر: اشكر الله على خطته الأزلية لخلاصك.', praySrc: 'baker', teach: 'تعبير «نسل المرأة» في تكوين 3: 15 هو أول نبوة في الكتاب المقدس عن الميلاد العذراوي بدون زرع بشر.', src: 'whyIncarnation' },
+      { phase: 'الأسبوع 2: نبوات العهد القديم', ref: 'إشعياء 7: 10-16', med: '"ها العذراء تحبل وتلد ابنًا وتدعو اسمه عمانوئيل" — الله معنا في كل تفاصيل يومنا.', pray: 'صلاة السادسة: تذكّر وسط ضغط اليوم أن «عمانوئيل» أي الله معك.', praySrc: 'sext', teach: 'في تفسير إشعياء 7 للقمص تادرس يعقوب، الآية الإلهية الفريدة تجمع بين البتولية والأمومة في السيدة العذراء.', src: 'isaiah7' },
+      { phase: 'الأسبوع 2: نبوات العهد القديم', ref: 'إشعياء 9: 1-7', med: '"لأنه يولد لنا ولد ونُعطى ابنًا" — يُولد بالجسد ويُعطى كابن أزلي من الآب.', pray: 'صلاة الغروب: سبّح المسيح بألقابه: عجيبًا، مشيرًا، إلهًا قديرًا، رئيس السلام.', praySrc: 'vespers', teach: 'إشعياء 9: 6 يثبت لاهوت المولود بوضوح إذ يدعوه «إلهًا قديرًا، أبًا أبديًا، رئيس السلام».', src: 'isaiah9' },
+      { phase: 'الأسبوع 2: نبوات العهد القديم', ref: 'ميخا 5: 2-4', med: 'اختار الله بيت لحم الصغيرة؛ الله يُظهر مجده في البساطة والاتضاع.', pray: 'صلاة النوم: اطلب روح الاتضاع في نجاحك وعملك.', praySrc: 'compline', teach: 'حددت نبوة ميخا 5: 2 مكان الميلاد (بيت لحم أفراتة) وأكدت أزليته: «ومخارجه منذ القديم منذ أيام الأزل».', src: 'matt2' },
+      { phase: 'الأسبوع 2: نبوات العهد القديم', ref: 'إشعياء 11: 1-5', med: 'من جذع يسّى يخرج غصن يحمل روح الحكمة والفهم والمشورة.', pray: 'صلاة باكر: صلِّ ليهبك الله روح الحكمة في قراراتك العملية.', praySrc: 'baker', teach: 'في الكورسات المتخصصة لإسقفية الشباب يُدرس تسلسل العهد القديم كإعداد تاريخي لمجيء المسيا المنتظر.', src: 'youthBishopric' },
+      { phase: 'الأسبوع 2: نبوات العهد القديم', ref: 'إشعياء 40: 1-11', med: '"أعدّوا طريق الرب" — تمهيد الطريق يعني إزالة الكبرياء واليأس من قلوبنا.', pray: 'صلاة الغروب: اطلب تعزية الله لنفسك ولكل متعب حولك.', praySrc: 'vespers', teach: 'صوت الصارخ في البرية في إشعياء 40 تحقق في خدمة يوحنا المعمدان السابق الذي أعدّ القلوب بالتوبة.', src: 'isaiah7' },
+      { phase: 'الأسبوع 2: نبوات العهد القديم', ref: 'ملاخي 4: 1-6', med: '"تشرق شمس البر والشفاء في أجنحتها" — المسيح شمس البر الذي يشفي جراح النفس.', pray: 'الأجبية: قدّم صلاة شكر في ختام الأسبوع الثاني.', praySrc: 'agpeya', teach: 'لقب «شمس البر» تردده الكنيسة القبطية في ألحان وتسابيح صوم وعيد الميلاد.', src: 'fastRite' },
+
+      { phase: 'الأسبوع 3: شهر كيهك والتسبيح', ref: 'لوقا 1: 1-25', med: 'أحد كيهك الأول (بشارة زكريا): صلاتك لا تضيع عند الله، وهو يستجيب في ملء الزمان.', pray: 'صلاة باكر: صلِّ بإيمان لأجل طلبة طال انتظارك لها.', praySrc: 'baker', teach: 'مع دخول شهر كيهك (الشهر المريمي) يبدأ الطقس الكيهكي وتسبحة نصف الليل المميزة بالثيؤطوكيات والمدائح.', src: 'kiahk1' },
+      { phase: 'الأسبوع 3: شهر كيهك والتسبيح', ref: 'مزمور 45: 9-17', med: '"قامت الملكة عن يمينك" — العذراء مريم نموذج الطهارة والطاعة والتسليم الكامل.', pray: 'صلاة السادسة: اطلب نقاوة الفكر والقلب بشفاعة السيدة العذراء.', praySrc: 'sext', teach: 'تضيف الإبصلمودية الكيهكية تفاسير (لبش) للأرباع تشرح سر التجسد وحمل العذراء لغير المحوي.', src: 'kiahk2' },
+      { phase: 'الأسبوع 3: شهر كيهك والتسبيح', ref: 'خروج 3: 1-6', med: 'العليقة المشتعلة بالنار ولم تحترق: رمز بديع للعذراء التي حملت نار اللاهوت دون أن تحترق.', pray: 'صلاة الغروب: تأمل في رموز العذراء وسبّح الله.', praySrc: 'vespers', teach: 'من أشهر رموز العذراء في كيهك: العليقة (خر 3)، سلم يعقوب (تك 28)، وقسط المن الذهبي (خر 16).', src: 'kiahk1' },
+      { phase: 'الأسبوع 3: شهر كيهك والتسبيح', ref: 'تكوين 28: 10-17', med: 'سلّم يعقوب الواصل بين السماء والأرض: بالتجسد صارت السماء مفتوحة لنا.', pray: 'صلاة النوم: اشكر الله لأنك تستطيع أن تتحدث معه في كل لحظة.', praySrc: 'compline', teach: 'في كورس الألحان بإسقفية الشباب نتعلم مقدمة الثيؤطوكيات الآدام وذكصولوجية كيهك الأولى (كي غار).', src: 'youthBishopric' },
+      { phase: 'الأسبوع 3: شهر كيهك والتسبيح', ref: 'مزمور 150', med: 'التسبيح لغة القلب الشاكر حتى في أوقات التعب.', pray: 'صلاة باكر: ابدأ يومك بمزمور تسبيح قبل رسائل العمل.', praySrc: 'baker', teach: 'تُعرف سهرات كيهك بنظام «سبعة وأربعة» أي 7 ثيؤطوكيات و4 هوسات في تسبحة نصف الليل.', src: 'kiahk2' },
+      { phase: 'الأسبوع 3: شهر كيهك والتسبيح', ref: 'دانيال 3: 51-60', med: 'الثلاثة فتية سبّحوا في الأتون فصار ندى باردًا؛ التسبيح يحوّل الضيق إلى سلام.', pray: 'صلاة السادسة: ردّد «سبحوه ومجدوه وزيدوه علوًا» وسط ضغوط اليوم.', praySrc: 'sext', teach: 'الهوس الثالث في التسبحة هو تسبحة الثلاثة فتية القديسين الذين ظهر معهم شبيه بابن الآلهة.', src: 'kiahk2' },
+      { phase: 'الأسبوع 3: شهر كيهك والتسبيح', ref: 'مزمور 136', med: '"لأن إلى الأبد رحمته" — ترديد مراحم الله يملأ النفس بالامتنان والهدوء.', pray: 'الأجبية: احضر سهرة كيهكية أو خصّص 20 دقيقة للتسبيح.', praySrc: 'agpeya', teach: 'الهوس الثاني (مزمور 136) يدربنا على ربط كل حدث في حياتنا برحمة الله الأبدية.', src: 'kiahk1' },
+
+      { phase: 'الأسبوع 4: البشارة والزيارة', ref: 'لوقا 1: 26-38', med: 'أحد كيهك الثاني (البشارة): "هوذا أنا أمة الرب، ليكن لي كقولك" — قمة الطاعة الواعية.', pray: 'صلاة باكر: سلّم خططك لمشيئة الله وقل «ليكن لي كقولك».', praySrc: 'baker', teach: 'في تفسير لوقا 1 للقمص تادرس يعقوب، حلّ الروح القدس على العذراء ليُقدّس المستودع البتولي.', src: 'luke1' },
+      { phase: 'الأسبوع 4: البشارة والزيارة', ref: 'لوقا 1: 39-45', med: 'أحد كيهك الثالث (الزيارة): أسرعت العذراء لخدمة أليصابات؛ الامتلاء بالمسيح يدفع للخدمة.', pray: 'صلاة السادسة: ابحث عن شخص تخدمه أو تشجعه اليوم.', praySrc: 'sext', teach: 'دعت أليصابات العذراء «أم ربي» بملء الروح القدس، إعلانًا عن لاهوت الجنين المتجسد في بطنها.', src: 'luke1' },
+      { phase: 'الأسبوع 4: البشارة والزيارة', ref: 'لوقا 1: 46-56', med: '"تعظم نفسي الرب وتبتهج روحي بالله مخلصي" — تسبحة مريم درس في الاتضاع.', pray: 'صلاة الغروب: اقرأ تسبحة مريم ببطء وحوّلها لصلاة شخصية.', praySrc: 'vespers', teach: 'تُعلن العذراء في تسبحتها احتياج كل البشر لله المخلص وتواضعها الكامل أمام عظمته.', src: 'luke1' },
+      { phase: 'الأسبوع 4: البشارة والزيارة', ref: 'لوقا 1: 57-66', med: 'أحد كيهك الرابع (ميلاد يوحنا): انفتح فم زكريا بالتسبيح حين أطاع كلمة الله.', pray: 'صلاة النوم: صلِّ أن ينطق لسانك دائمًا بالخير والبركة.', praySrc: 'compline', teach: 'آحاد كيهك الأربعة تتدرج: البشارة بيوحنا، البشارة بالمسيح، الزيارة، وميلاد يوحنا المعمدان.', src: 'luke1' },
+      { phase: 'الأسبوع 4: البشارة والزيارة', ref: 'لوقا 1: 67-80', med: 'تسبحة زكريا: "بأحشاء رحمة إلهنا التي بها افتقدنا المشرق من العلاء".', pray: 'صلاة باكر: اطلب من الله أن يهدي خطواتك في طريق السلام.', praySrc: 'baker', teach: 'غاية التجسد في تسبحة زكريا أن نعبد الله «بلا خوف بقداسة وبر قدامه جميع أيام حياتنا».', src: 'luke1' },
+      { phase: 'الأسبوع 4: البشارة والزيارة', ref: 'متى 1: 1-17', med: 'سلسلة أنساب المسيح تضم أبرارًا وخطاة تائبين؛ الله يدخل تاريخنا ويقدّسه.', pray: 'صلاة السادسة: اشكر الله لأنه يقبلك ويعمل في حياتك.', praySrc: 'sext', teach: 'في تفسير متى 1 للقمص تادرس، ذكر أربع نساء في النسب يعلن شمول الخلاص لكل الأمم والخطاة التائبين.', src: 'matt1' },
+      { phase: 'الأسبوع 4: البشارة والزيارة', ref: 'متى 1: 18-25', med: 'يوسف النجار البار: مثال للهدوء والستر والطاعة الفورية لصوت الله.', pray: 'الأجبية: اطلب روح الهدوء والحكمة في المواقف الصعبة.', praySrc: 'agpeya', teach: 'اسم «يسوع» يعني «يهوه يخلّص» كما شرح الملاك ليوسف: «لأنه يخلّص شعبه من خطاياهم».', src: 'matt1' },
+
+      { phase: 'الأسبوع 5: لاهوت التجسد الإلهي', ref: 'يوحنا 1: 14-18', med: '"والكلمة صار جسدًا وحلّ بيننا" — الله لم يرسل رسالة من بعيد بل جاء ليسكن معنا.', pray: 'صلاة باكر: اشكر المسيح الذي أخلى نفسه لأجلك.', praySrc: 'baker', teach: 'القديس أثناسيوس الرسولي (مدرسة الإسكندرية) يشرح في «تجسد الكلمة» أن الخالق وحده القادر على تجديد خليقته.', src: 'athanasius' },
+      { phase: 'الأسبوع 5: لاهوت التجسد الإلهي', ref: 'فيلبي 2: 5-11', med: '"أخلى نفسه آخذًا صورة عبد" — الإخلاء تواضع في إظهار المجد دون فقدان للاهوت.', pray: 'صلاة السادسة: اخدم شخصًا اليوم دون انتظار مديح.', praySrc: 'sext', teach: 'تعلمنا الكلية الإكليريكية أن اتحاد اللاهوت بالناسوت تم «بغير اختلاط ولا امتزاج ولا تغيير».', src: 'clerical' },
+      { phase: 'الأسبوع 5: لاهوت التجسد الإلهي', ref: 'عبرانيين 2: 14-18', med: '"شابهنا في كل شيء ما خلا الخطية وحدها" — لذلك هو يفهم أتعابك ويعينك.', pray: 'صلاة الغروب: تكلّم مع المسيح بصراحة عن أكثر تحدٍ يضغطك.', praySrc: 'vespers', teach: 'في كتاب «حتمية التجسد الإلهي»، الدافع الأول للتجسد هو محبة الله الفائقة لخلاص الإنسان.', src: 'whyIncarnation' },
+      { phase: 'الأسبوع 5: لاهوت التجسد الإلهي', ref: 'غلاطية 4: 4-7', med: '"ولما جاء ملء الزمان أرسل الله ابنه مولودًا من امرأة" — صرنا به أبناء لا عبيدًا.', pray: 'صلاة النوم: صلِّ «أبانا الذي في السموات» بإحساس البنوة.', praySrc: 'compline', teach: 'تشبيه البابا أثناسيوس: كما يرفع الملك شأن المدينة حين يقيم فيها، رفع الله بتجسده شأن طبيعتنا.', src: 'athanasius' },
+      { phase: 'الأسبوع 5: لاهوت التجسد الإلهي', ref: '1 تيموثاوس 3: 16', med: '"عظيم هو سر التقوى: الله ظهر في الجسد" — التجسد أساس كل أسرار الكنيسة.', pray: 'صلاة باكر: اطلب حياة تجمع بين العمق الروحي والأمانة العملية.', praySrc: 'baker', teach: 'في كورس العقيدة بإسقفية الشباب: الفادي لابد أن يكون إنسانًا ليموت عنا، وإلهًا لتكون كفارته غير محدودة.', src: 'youthBishopric' },
+      { phase: 'الأسبوع 5: لاهوت التجسد الإلهي', ref: 'كولوسي 2: 8-10', med: '"فإنه فيه يحلّ كل ملء اللاهوت جسديًا" — كفايتك الحقيقية في المسيح.', pray: 'صلاة السادسة: تخلَّ عن المقارنة واشكر الله على وزناتك.', praySrc: 'sext', teach: 'مدرسة الإسكندرية اللاهوتية (والكلية الإكليريكية امتدادها) دافعت عن ألوهية الابن في مجمع نيقية 325م.', src: 'clerical' },
+      { phase: 'الأسبوع 5: لاهوت التجسد الإلهي', ref: 'يوحنا 3: 16-18', med: '"هكذا أحب الله العالم حتى بذل ابنه الوحيد" — الميلاد بداية الطريق للصليب والقيامة.', pray: 'الأجبية: اختم الأسبوع الخامس بصلاة شكر عميقة.', praySrc: 'agpeya', teach: 'لا تفصل الكنيسة بين المذود والصليب؛ فالأقمطة تشير للأكفان، وهدية المر تشير لآلام الفداء.', src: 'matt2' },
+
+      { phase: 'الأسبوع 6: نحو المذود', ref: 'لوقا 2: 1-7', med: '"إذ لم يكن لهما موضع في المنزل" — هل لقلبنا ومواعيدنا موضع للمسيح؟', pray: 'صلاة باكر: أخلِ مكانًا حقيقيًا للمسيح في جدولك اليومي.', praySrc: 'baker', teach: 'في تفسير لوقا 2 للقمص أنطونيوس فكري، ميلاد الملك في مذود يعلن رفض الكبرياء وتقديس البساطة.', src: 'luke2' },
+      { phase: 'الأسبوع 6: نحو المذود', ref: 'لوقا 2: 8-14', med: '"المجد لله في الأعالي وعلى الأرض السلام" — السلام الحقيقي يبدأ بالمصالحة مع الله.', pray: 'صلاة السادسة: اصنع سلامًا اليوم مع شخص اختلفت معه.', praySrc: 'sext', teach: 'بشّرت الملائكة الرعاة الساهرين أولًا؛ الله يعلن أسراره للأمناء في عملهم البسيط.', src: 'luke2' },
+      { phase: 'الأسبوع 6: نحو المذود', ref: 'لوقا 2: 15-20', med: 'جاء الرعاة مسرعين ثم رجعوا يمجدون الله؛ اللقاء بالمسيح يملأك بالبشارة.', pray: 'صلاة الغروب: شارك آية مشجعة مع صديق اليوم.', praySrc: 'vespers', teach: 'العذراء «كانت تحفظ جميع هذا الكلام متفكرة به في قلبها» (لو 2: 19) — نموذج التأمل الهادئ.', src: 'luke2' },
+      { phase: 'الأسبوع 6: نحو المذود', ref: 'متى 2: 1-12', med: 'سار المجوس خلف النجم؛ الاجتهاد العلمي والروحي يقودان معًا لمعرفة الله.', pray: 'صلاة النوم: قدّم لله ذهب قلبك ولبان صلاتك ومرّ جهادك.', praySrc: 'compline', teach: 'عاد المجوس «في طريق آخر» (مت 2: 12) — من يلتقي بالمسيح يتغير اتجاه حياته.', src: 'matt2' },
+      { phase: 'الأسبوع 6: نحو المذود', ref: 'متى 2: 13-15', med: '"من مصر دعوت ابني" — بركة خاصة لأرضنا مصر التي احتضنت العائلة المقدسة.', pray: 'صلاة باكر: صلِّ لأجل سلام وبركة مصر والكنيسة.', praySrc: 'baker', teach: 'دخول العائلة المقدسة لمصر حقق نبوتي هوشع 11: 1 وإشعياء 19: «مبارك شعبي مصر».', src: 'matt2' },
+      { phase: 'الأسبوع 6: نحو المذود', ref: 'لوقا 2: 25-35', med: 'سمعان الشيخ انتظر بصبر فأمسك الخلاص على ذراعيه؛ الانتظار مع الله لا يخيب.', pray: 'صلاة الغروب: اطلب نعمة الصبر والرجاء في مستقبلك.', praySrc: 'vespers', teach: 'تسبحة سمعان الشيخ «الآن تطلق عبدك يا سيد بسلام» تُصلى يوميًا في الكنيسة.', src: 'luke2' },
+      { phase: 'الأسبوع 6: نحو المذود', ref: 'رؤيا 3: 20', med: '"هأنذا واقف على الباب وأقرع" — ونحن نقترب من ليلة العيد افتح له باب قلبك.', pray: 'الأجبية: استعد للتناول ليلة عيد الميلاد بالاعتراف.', praySrc: 'agpeya', teach: 'جوهر عيد الميلاد هو الاتحاد بالمولود في سر الإفخارستيا بقلب تائب وفرح.', src: 'fastRite' },
+
+      { phase: 'يوم البرامون – الاستعداد للعيد', ref: 'متى 3: 1-12', med: 'اليوم الـ43 (برامون عيد الميلاد): استعداد روحي عميق بالصوم الانقطاعي حتى المساء قبل فرحة العيد.', pray: 'صلاة النوم والبرامون: اشكر الله على إتمام الـ43 يومًا واستعد للقداس.', praySrc: 'compline', teach: 'كلمة «برامون» تعني الاستعداد ويُصام انقطاعيًا بدون سمك، ويأتي يومًا واحدًا عندما يقع العيد الخميس (7/1/2027).', src: 'baramoun' }
+    ];
+
+    const DAYS_DATA = SPIRITUAL_SEED.map((sp, idx) => {
+      const dayNum = idx + 1;
+      const dateInfo = getDateForDay(dayNum);
+      return {
+        day: dayNum,
+        dateLabel: dateInfo.label,
+        dateShort: dateInfo.short,
+        dateIso: dateInfo.iso,
+        phase: sp.phase,
+        meditation: { ref: sp.ref, text: sp.med, source: SOURCES[sp.src] },
+        reel: FATHERS_REELS[idx % FATHERS_REELS.length],
+        prayer: { text: sp.pray, source: SOURCES[sp.praySrc] },
+        teaching: { text: sp.teach, source: SOURCES[sp.src] },
+        career: PRACTICAL_LESSONS[idx]
+      };
+    });
+
+    // =========================================================================
+    // 4. DEDICATED TWO-TESTAMENT COMPETITION BANK (20 Questions) + LEADERBOARD
+    // =========================================================================
+    const COMPETITION_BANK = [
+      // العهد القديم ونبوات الميلاد
+      { id: 'Q01', cat: 'ot', catAr: 'العهد القديم', q: 'ما هي أول نبوة في الكتاب المقدس أشارت للميلاد العذراوي بلفظ «نسل المرأة»؟', opts: ['تكوين 3: 15', 'خروج 12: 5', 'مزمور 23: 1'], ans: 0, exp: 'في تكوين 3: 15 وعد الله أن نسل المرأة يسحق رأس الحية.' },
+      { id: 'Q02', cat: 'ot', catAr: 'العهد القديم', q: 'في أي سفر وردت النبوة: «ها العذراء تحبل وتلد ابنًا وتدعو اسمه عمانوئيل»؟', opts: ['سفر إرميا 7', 'سفر إشعياء 7: 14', 'سفر حزقيال 7'], ans: 1, exp: 'تنبأ بها إشعياء النبي في إشعياء 7: 14.' },
+      { id: 'Q03', cat: 'ot', catAr: 'العهد القديم', q: 'أي نبي حدّد مكان ميلاد المسيح بدقة في «بيت لحم أفراتة»؟', opts: ['ميخا النبي (5: 2)', 'عاموس النبي', 'يونان النبي'], ans: 0, exp: 'ميخا 5: 2: «أما أنتِ يا بيت لحم أفراتة... فمنكِ يخرج لي الذي يكون متسلطًا».' },
+      { id: 'Q04', cat: 'ot', catAr: 'العهد القديم', q: 'أي الألقاب التالية وردت في إشعياء 9: 6 عن المولود العجيب؟', opts: ['إلهًا قديرًا، أبًا أبديًا، رئيس السلام', 'نبيًا وكاهنًا فقط', 'ملك بابل وفارس'], ans: 0, exp: 'إشعياء 9: 6 يعلن لاهوت المولود بوضوح.' },
+      { id: 'Q05', cat: 'ot', catAr: 'العهد القديم', q: 'ما النبوة التي استشهد بها متى البشير عن هروب العائلة المقدسة إلى مصر؟', opts: ['من مصر دعوت ابني (هوشع 11: 1)', 'في مصر يبني هيكلًا', 'على جبل سيناء يظهر'], ans: 0, exp: 'اقتبس متى 2: 15 نبوة هوشع 11: 1: «من مصر دعوت ابني».' },
+
+      // العهد الجديد وأحداث الميلاد
+      { id: 'Q06', cat: 'nt', catAr: 'العهد الجديد', q: 'ما ترتيب آحاد شهر كيهك الأربعة في قراءات الكنيسة القبطية؟', opts: ['بشارة زكريا، بشارة العذراء، الزيارة، ميلاد يوحنا', 'الميلاد، الهروب، المعمودية، العرس', 'المجوس، الرعاة، الختان، الهيكل'], ans: 0, exp: 'كلها من إنجيل لوقا الأصحاح الأول بالترتيب.' },
+      { id: 'Q07', cat: 'nt', catAr: 'العهد الجديد', q: 'ماذا دعت أليصابات السيدة العذراء بملء الروح القدس عند زيارتها؟', opts: ['أم ربي (لو 1: 43)', 'ملكة أورشليم', 'ابنة زكريا'], ans: 0, exp: 'قالت: «فمن أين لي هذا أن تأتي أم ربي إليَّ؟».' },
+      { id: 'Q08', cat: 'nt', catAr: 'العهد الجديد', q: 'من أول فئة بشرية بشّرتها الملائكة ليلة ميلاد السيد المسيح؟', opts: ['الرعاة الساهرون في الحقل', 'رؤساء الكهنة', 'جنود قيصر'], ans: 0, exp: 'ظهر الملاك وجمهور الجند السماوي للرعاة المتبدين في الحقل (لو 2: 8-14).' },
+      { id: 'Q09', cat: 'nt', catAr: 'العهد الجديد', q: 'إلى ماذا ترمز هدايا المجوس الثلاث (الذهب واللبان والمرّ) بالترتيب؟', opts: ['مُلكه، كهنوته ولاهوته، وآلامه وفدائه', 'غناه، رحلته لمصر، وبناء الهيكل', 'العهد القديم، الأسباط، والناموس'], ans: 0, exp: 'الذهب للملك، اللبان للاهوت والكهنوت، والمر لآلام الصليب.' },
+      { id: 'Q10', cat: 'nt', catAr: 'العهد الجديد', q: 'من الشيخ البار الذي حمل الطفل يسوع في الهيكل وقال «الآن تطلق عبدك بسلام»؟', opts: ['سمعان الشيخ', 'زكريا الكاهن', 'يوسف الرامي'], ans: 0, exp: 'سمعان الشيخ الذي أُعلم بالروح القدس ألا يرى الموت قبل أن يرى مسيح الرب (لو 2: 25-30).' },
+
+      // لاهوت التجسد الإلهي
+      { id: 'Q11', cat: 'inc', catAr: 'التجسد الإلهي', q: 'من مؤلف كتاب «تجسد الكلمة» (De Incarnatione) الشهير في مدرسة الإسكندرية؟', opts: ['القديس أثناسيوس الرسولي', 'القديس باخوميوس', 'القديس مكاريوس'], ans: 0, exp: 'كتبه البابا أثناسيوس الرسولي في شبابه ليشرح حتمية التجسد والفداء.' },
+      { id: 'Q12', cat: 'inc', catAr: 'التجسد الإلهي', q: 'ما الصيغة الأرثوذكسية الدقيقة لاتحاد اللاهوت بالناسوت في القداس؟', opts: ['بغير اختلاط ولا امتزاج ولا تغيير', 'بانفصال عند الصليب', 'بتحوّل اللاهوت إلى لحم'], ans: 0, exp: 'نعلن في الاعتراف الأخير: «إن لاهوته لم يفارق ناسوته لحظة واحدة... بغير اختلاط ولا امتزاج ولا تغيير».' },
+      { id: 'Q13', cat: 'inc', catAr: 'التجسد الإلهي', q: 'لماذا نصوم 43 يومًا في صوم الميلاد القبطي؟', opts: ['40 يومًا كموسى النبي + 3 أيام معجزة المقطم', '30 يومًا لكيهك + 13 يومًا للرسل', '40 يومًا فقط و3 أيام برامون دائمًا'], ans: 0, exp: '40 يومًا لاستقبال كلمة الله الحي + 3 أيام تذكار نقل جبل المقطم.' },
+      { id: 'Q14', cat: 'inc', catAr: 'التجسد الإلهي', q: 'لماذا كان حتميًا أن يكون الفادي إلهًا وإنسانًا معًا في العقيدة الأرثوذكسية؟', opts: ['إنسانًا ليموت عنا، وإلهًا لتكون كفارته غير محدودة', 'لكي يتكلم كل اللغات', 'لكي يملك على أورشليم الأرضية'], ans: 0, exp: 'الناسوت يقبل الموت نيابة عنا، واللاهوت يمنح الذبيحة قيمة غير محدودة.' },
+      { id: 'Q15', cat: 'inc', catAr: 'التجسد الإلهي', q: 'كم يومًا يكون برامون عيد الميلاد عندما يقع العيد يوم الخميس (7 يناير 2027)؟', opts: ['يوم واحد (الأربعاء 6 يناير)', 'يومان', 'ثلاثة أيام'], ans: 0, exp: 'يكون البرامون يومًا واحدًا إذا جاء العيد من الثلاثاء إلى السبت.' },
+
+      // رموز السيدة العذراء مريم
+      { id: 'Q16', cat: 'mary', catAr: 'رموز العذراء', q: 'إلى ماذا ترمز «العليقة المشتعلة بالنار ولم تحترق» (خر 3) في التسبحة الكيهكية؟', opts: ['السيدة العذراء التي حملت نار اللاهوت دون أن تحترق', 'عمود السحاب فقط', 'جبل الكرمل'], ans: 0, exp: 'العليقة من أشهر رموز العذراء والدة الإله (ثيؤطوكوس) في كيهك.' },
+      { id: 'Q17', cat: 'mary', catAr: 'رموز العذراء', q: 'ماذا يرمز «قسط المن الذهبي» في خيمة الاجتماع داخل الثيؤطوكيات؟', opts: ['بطن العذراء الطاهر الذي حمل المسيح خبز الحياة', 'المائدة الأرضية', 'مذبح البخور فقط'], ans: 0, exp: 'القسط الذهبي يرمز لنقاوة العذراء، والمن السماوي يرمز للمسيح خبز الحياة.' },
+      { id: 'Q18', cat: 'mary', catAr: 'رموز العذراء', q: 'ما الرمز الذي رآه يعقوب في حلمه (تك 28) وتمدح به الكنيسة العذراء في كيهك؟', opts: ['سلم يعقوب الواصل بين السماء والأرض', 'قوس قزح', 'عصا موسى'], ans: 0, exp: 'سلم يعقوب يرمز للعذراء التي بالتجسد منها اتحدت السماء بالأرض.' },
+      { id: 'Q19', cat: 'mary', catAr: 'رموز العذراء', q: 'ماذا يعني لقب «ثيؤطوكوس» (Theotokos) الذي أقرّه مجمع أفسس 431م؟', opts: ['والدة الإله', 'الممتلئة نعمة فقط', 'أخت الملائكة'], ans: 0, exp: 'أقرّ مجمع أفسس برئاسة القديس كيرلس الكبير لقب «والدة الإله».' },
+      { id: 'Q20', cat: 'mary', catAr: 'رموز العذراء', q: 'ما المقصود بنظام «سبعة وأربعة» في سهرات شهر كيهك المريمي؟', opts: ['7 ثيؤطوكيات و4 هوسات', '7 قداسات و4 عشيات', '7 مزامير و4 أناجيل'], ans: 0, exp: 'يتكون نظام التسبحة الكيهكية من 7 ثيؤطوكيات (لأيام الأسبوع) و4 هوسات.' }
+    ];
+
+    const DEMO_LEADERBOARD_PEERS = [
+      { id: 'peer_1', name: 'كيرلس ماجد', meeting: 'مارمينا خريجين', score: 150, streak: 18 },
+      { id: 'peer_2', name: 'مريم هاني', meeting: 'الملاك ميخائيل جامعة', score: 130, streak: 15 },
+      { id: 'peer_3', name: 'بيشوي عادل', meeting: 'القديس أغسطينوس', score: 90, streak: 12 },
+      { id: 'peer_4', name: 'سارة جرجس', meeting: 'مارمينا خريجين', score: 60, streak: 9 }
+    ];
+
+    // =========================================================================
+    // 5. STATE MANAGEMENT
+    // =========================================================================
+    const STORAGE_KEY = 'nativity_mission_2026_v2';
+
+    const DEFAULT_STATE = {
+      isLoggedIn: false,
+      user: { email: '', name: '', meeting: 'مارمينا خريجين', whatsapp: '', whatsappOptIn: true },
+      activeTab: 'home',
+      selectedDay: 1,
+      role: 'user', // 'user' | 'admin' | 'super_admin'
+      adminSubTab: 'overview', // 'overview' | 'whatsapp' | 'emergency' | 'security'
+      darkMode: false,
+      fontSize: 'md',
+      reminderTime: '08:00',
+      courseFilter: 'all',
+      expandedLessonDay: 1,
+      quizCatFilter: 'all',
+      lockFutureDays: false,
+      quizOpen: true,
+      announcement: 'مرحبًا بكم في رحلة صوم الميلاد (43 يومًا: 25/11/2026 – 7/1/2027) — نمو روحي وعملي كل يوم!',
+      whatsappConfig: {
+        enabled: true,
+        checkTime: '20:00',
+        template: 'وحشتنا يا {الاسم} في رحلة صوم الميلاد (On a Mission) ✝️✨ لسه مسجلتش دخول النهاردة (يوم {اليوم}) — ادخل دلوقتي وكمّل الريلز والكورس العملي!'
+      },
+      inactiveDemoUsers: [
+        { id: 'U-11', name: 'مينا نادر', meeting: 'مارمينا خريجين', phone: '201000000001', missedDays: 1, sent: false },
+        { id: 'U-12', name: 'مارينا سامي', meeting: 'الملاك ميخائيل جامعة', phone: '201000000002', missedDays: 2, sent: false },
+        { id: 'U-13', name: 'أبانوب مجدي', meeting: 'القديس أغسطينوس', phone: '201000000003', missedDays: 1, sent: false }
+      ],
+      completedTasks: {},
+      quizAnswers: {}, // Qid -> selectedIdx
+      jesusPrayers: 0,
+      attendanceDate: '2026-11-25',
+      attendance: {},
+      emergencyRequests: [
+        { id: 'REQ-101', meeting: 'مارمينا خريجين', type: 'محتاج أرتب اعترافي 💧', note: 'طلب ميعاد اعتراف هذا الأسبوع (بيان تجريبي)', status: 'جديد' },
+        { id: 'REQ-102', meeting: 'الملاك ميخائيل جامعة', type: 'عندي سؤال ❓', note: 'سؤال عن طقس التسبحة الكيهكية (بيان تجريبي)', status: 'جاري المتابعة' }
+      ],
+      auditLog: [
+        { time: '25/11 08:00', actor: 'مدير النظام', action: 'تفعيل سياسة RLS: سجل الاعتراف والحضور خاص بالمستخدم فقط' },
+        { time: '25/11 08:10', actor: 'مدير النظام', action: 'ضبط جدول فحص غياب الواتساب اليومي الساعة 20:00' }
+      ]
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+        return Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), JSON.parse(raw));
+      } catch (e) {
+        return JSON.parse(JSON.stringify(DEFAULT_STATE));
+      }
+    }
+
+    let state = loadState();
+    function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {} }
+
+    // =========================================================================
+    // 6. METRICS & LEADERBOARD
+    // =========================================================================
+    const DAILY_KEYS = ['reel', 'prayer', 'teaching', 'career'];
+    const TOTAL_DAILY_TASKS = DAYS_DATA.length * DAILY_KEYS.length; // 172
+
+    function getDayCompletion(dayNum) {
+      let c = 0;
+      DAILY_KEYS.forEach(k => { if (state.completedTasks[`${dayNum}_${k}`]) c++; });
+      return c;
+    }
+
+    function getStats() {
+      let totalDone = 0, spiritualDone = 0, careerDone = 0, fullDays = 0, activeDays = 0;
+      let marketingDone = 0, aiDone = 0, englishDone = 0;
+      DAYS_DATA.forEach(d => {
+        const c = getDayCompletion(d.day);
+        totalDone += c;
+        if (c === 4) fullDays++;
+        if (c > 0) activeDays++;
+        ['reel', 'prayer', 'teaching'].forEach(k => { if (state.completedTasks[`${d.day}_${k}`]) spiritualDone++; });
+        if (state.completedTasks[`${d.day}_career`]) {
+          careerDone++;
+          if (d.career.track === 'marketing') marketingDone++;
+          if (d.career.track === 'ai') aiDone++;
+          if (d.career.track === 'english') englishDone++;
+        }
+      });
+
+      let quizScore = 0, quizCorrect = 0, quizAnswered = 0;
+      COMPETITION_BANK.forEach(q => {
+        if (state.quizAnswers[q.id] !== undefined) {
+          quizAnswered++;
+          if (state.quizAnswers[q.id] === q.ans) {
+            quizScore += 10;
+            quizCorrect++;
+          }
+        }
+      });
+
+      return {
+        totalDone,
+        totalPct: Math.round((totalDone / TOTAL_DAILY_TASKS) * 100),
+        spiritualPct: Math.round((spiritualDone / (43 * 3)) * 100),
+        careerPct: Math.round((careerDone / 43) * 100),
+        careerDone, marketingDone, aiDone, englishDone,
+        fullDays, activeDays,
+        quizScore, quizCorrect, quizAnswered
+      };
+    }
+
+    function getLiveLeaderboard() {
+      if (IS_SUPABASE_CONFIGURED && Array.isArray(liveLeaderboardCache) && liveLeaderboardCache.length > 0) {
+        return liveLeaderboardCache.map(row => ({
+          id: row.user_id,
+          name: row.user_id === state.user.id ? `${row.full_name} (أنت)` : row.full_name,
+          meeting: row.meeting,
+          score: Number(row.total_score || 0),
+          isMe: row.user_id === state.user.id
+        }));
+      }
+      const stats = getStats();
+      const userName = state.user.name || (state.user.email ? state.user.email.split('@')[0] : 'أنت');
+      const entries = [
+        ...DEMO_LEADERBOARD_PEERS,
+        { id: 'current_user', name: `${userName} (أنت)`, meeting: state.user.meeting || 'مارمينا خريجين', score: stats.quizScore, isMe: true }
+      ];
+      entries.sort((a, b) => b.score - a.score);
+      return entries;
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      t.classList.remove('hidden');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => t.classList.add('hidden'), 2800);
+    }
+
+    function openModal(title, html) {
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalBody').innerHTML = html;
+      document.getElementById('modalOverlay').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeModal() { document.getElementById('modalOverlay').classList.add('hidden'); }
+
+    // =========================================================================
+    // 7. VIEWS
+    // =========================================================================
+    function renderLogin() {
+      return `
+        <section class="min-h-[88vh] flex flex-col justify-center py-4">
+          <div class="hero-gradient rounded-3xl p-5 text-white card-shadow space-y-5">
+            <div class="text-center space-y-1.5">
+              <div class="w-12 h-12 rounded-2xl bg-white/15 text-nativity-gold mx-auto flex items-center justify-center">
+                <i data-lucide="sparkles" class="w-6 h-6"></i>
+              </div>
+              <h1 class="text-xl font-extrabold ltr-text">On a Mission</h1>
+              <p class="text-xs font-bold text-nativity-goldLight">صوم الميلاد المجيد – رحلة 43 يومًا (روحي + عملي)</p>
+              <p class="text-[11px] text-teal-100/80">من الأربعاء 25/11/2026 حتى عيد الميلاد 7/1/2027</p>
+            </div>
+
+            <form id="loginForm" class="bg-white/95 dark:bg-[#11202D] text-slate-800 dark:text-white rounded-2xl p-4 space-y-3 shadow-xl">
+              <div class="space-y-1">
+                <label class="text-xs font-extrabold block">1. الإيميل</label>
+                <input id="loginEmail" type="email" required value="${state.user.email || ''}" placeholder="name@example.com" class="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-nativity-700 ltr-text text-right" />
+              </div>
+
+              <div class="space-y-1">
+                <label class="text-xs font-extrabold block">2. الباسورد</label>
+                <input id="loginPassword" type="password" required placeholder="••••••••" class="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-nativity-700" />
+              </div>
+
+              <div class="space-y-1">
+                <label class="text-xs font-extrabold block">3. اختر الاجتماع</label>
+                <select id="loginMeeting" required class="w-full text-xs font-bold p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-nativity-700">
+                  ${MEETINGS.map(m => `<option value="${m}" ${state.user.meeting === m ? 'selected' : ''}>${m}</option>`).join('')}
+                </select>
+              </div>
+
+              <div class="pt-1 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
+                <label class="text-[11px] font-bold text-slate-600 dark:text-slate-300 block">رقم الواتساب (اختياري – لتنبيهات الغياب اليومي)</label>
+                <input id="loginWhatsapp" type="tel" value="${state.user.whatsapp || ''}" placeholder="01xxxxxxxxx" class="w-full text-xs p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 ltr-text text-right" />
+              </div>
+
+              <div class="space-y-1">
+                <label class="text-[11px] font-bold text-slate-600 dark:text-slate-300 block">الاسم (للترتيب في المسابقة)</label>
+                <input id="loginName" type="text" value="${state.user.name || ''}" placeholder="مثال: مينا كريم" class="w-full text-xs p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+              </div>
+              <div class="grid grid-cols-2 gap-2 pt-1">
+                <button type="submit" data-auth-mode="signin" class="py-2.5 rounded-xl hero-gradient text-white text-xs font-extrabold shadow hover:opacity-95 transition">تسجيل دخول ✝️</button>
+                <button type="button" id="btnSignUpSubmit" class="py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-extrabold shadow transition">إنشاء حساب جديد</button>
+              </div>
+              ${!IS_SUPABASE_CONFIGURED ? `
+                <button type="button" id="btnDemoLogin" class="w-full py-2 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 text-xs font-extrabold hover:bg-amber-200/80 transition">دخول تجريبي سريع للمعاينة (قبل ربط Supabase)</button>
+                <p class="text-[10px] text-center text-slate-500">وضع المعاينة المحلية — ضع مفاتيح Supabase في أول الملف للعمل أونلاين.</p>
+              ` : `<p class="text-[10px] text-center text-emerald-700 dark:text-emerald-300 font-bold">🟢 متصل بقاعدة بيانات Supabase أونلاين</p>`}
+            </form>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderHome() {
+      const d = DAYS_DATA[state.selectedDay - 1];
+      const stats = getStats();
+      const dayDone = getDayCompletion(d.day);
+      const isDone = (k) => !!state.completedTasks[`${d.day}_${k}`];
+      const trackStyle = {
+        marketing: { bg: 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200', border: 'border-t-rose-500', icon: 'megaphone' },
+        ai: { bg: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200', border: 'border-t-indigo-500', icon: 'cpu' },
+        english: { bg: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200', border: 'border-t-emerald-500', icon: 'languages' }
+      }[d.career.track];
+
+      return `
+        <!-- Hero -->
+        <section class="hero-gradient rounded-2xl p-4 text-white card-shadow space-y-3">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="inline-flex items-center gap-1 text-[10.5px] font-bold px-2.5 py-0.5 rounded-full bg-white/15 text-nativity-goldLight mb-1">
+                ✝️ ${state.user.meeting}
+              </span>
+              <h1 class="text-lg font-extrabold leading-snug">صوم الميلاد المجيد</h1>
+              <p class="text-[11px] text-teal-100/90">نمو روحي + عملي • 25/11/2026 – 7/1/2027</p>
+            </div>
+            <button type="button" id="btnOpenCert" class="gold-gradient text-nativity-900 text-xs font-extrabold px-3 py-2 rounded-xl shadow shrink-0 flex items-center gap-1">
+              <i data-lucide="award" class="w-4 h-4"></i><span>الشهادة</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <div class="bg-white/10 rounded-xl p-2.5">
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-teal-100">النمو الروحي</span>
+                <span class="font-extrabold text-nativity-goldLight">${stats.spiritualPct}%</span>
+              </div>
+              <div class="h-1.5 bg-white/20 rounded-full overflow-hidden">
+                <div class="h-full bg-nativity-gold rounded-full transition-all" style="width:${stats.spiritualPct}%"></div>
+              </div>
+            </div>
+            <div class="bg-white/10 rounded-xl p-2.5">
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-teal-100">التطوير العملي (3 كورسات)</span>
+                <span class="font-extrabold text-emerald-300">${stats.careerPct}%</span>
+              </div>
+              <div class="h-1.5 bg-white/20 rounded-full overflow-hidden">
+                <div class="h-full bg-emerald-400 rounded-full transition-all" style="width:${stats.careerPct}%"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Day Switcher -->
+        <section class="bg-white dark:bg-[#11202D] rounded-2xl p-3 card-shadow border border-slate-200/70 dark:border-slate-800 flex items-center justify-between gap-2">
+          <button type="button" id="btnPrevDay" ${d.day <= 1 ? 'disabled' : ''} class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 disabled:opacity-40"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+          <div class="text-center flex-1">
+            <div class="flex items-center justify-center gap-1.5">
+              <span class="text-xs font-extrabold px-2 py-0.5 rounded-md bg-nativity-900 text-nativity-goldLight">يوم ${d.day} / 43</span>
+              <span class="text-xs font-bold text-slate-600 dark:text-slate-300">${d.dateLabel}</span>
+            </div>
+            <p class="text-[11px] text-teal-700 dark:text-teal-300 font-semibold mt-1">${d.phase} • إنجاز اليوم: ${dayDone}/4</p>
+          </div>
+          <button type="button" id="btnNextDay" ${d.day >= 43 ? 'disabled' : ''} class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 disabled:opacity-40"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+        </section>
+
+        <!-- 1. Spiritual Reel (60-90s from the 7 Fathers ONLY) -->
+        <article class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 border-t-4 border-t-sky-600 space-y-2.5">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300 flex items-center justify-center shrink-0">
+                <i data-lucide="play-circle" class="w-4 h-4"></i>
+              </span>
+              <div>
+                <h2 class="font-extrabold text-sm">1. ريلز التأمل الروحي (${d.reel.dur})</h2>
+                <p class="text-[11px] text-sky-700 dark:text-sky-300 font-bold">${d.reel.father}</p>
+              </div>
+            </div>
+            <button type="button" data-toggle-task="reel" class="px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 ${isDone('reel') ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-800'}">
+              ${isDone('reel') ? '✓ سمعته' : 'تم - خلصت'}
+            </button>
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-300"><strong>الشاهد: ${d.meditation.ref}</strong> — ${d.meditation.text}</p>
+          <a href="${d.reel.url}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold flex items-center justify-center gap-2 transition shadow-sm">
+            <i data-lucide="youtube" class="w-4 h-4"></i>
+            <span>اسمع التأمل الآن: ${d.reel.title}</span>
+          </a>
+        </article>
+
+        <!-- 2. Daily Prayer + Jesus Prayer Counter -->
+        <article class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 border-t-4 border-t-amber-500 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 flex items-center justify-center">
+                <i data-lucide="flame" class="w-4 h-4"></i>
+              </span>
+              <div>
+                <h2 class="font-extrabold text-sm">2. صلاة اليوم وصلاة يسوع</h2>
+                <p class="text-[11px] text-amber-700 dark:text-amber-300 font-bold">يا ربي يسوع المسيح ارحمني أنا الخاطئ</p>
+              </div>
+            </div>
+            <button type="button" data-toggle-task="prayer" class="px-3 py-1.5 rounded-xl text-xs font-bold ${isDone('prayer') ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-800'}">
+              ${isDone('prayer') ? '✓ تم' : 'تم - خلصت'}
+            </button>
+          </div>
+          <p class="text-xs text-slate-700 dark:text-slate-200">${d.prayer.text}</p>
+          <div class="flex items-center justify-between gap-2 bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/70 dark:border-amber-800/50 rounded-xl p-2.5">
+            <div class="text-xs font-bold text-amber-900 dark:text-amber-200">عدّاد صلاة يسوع: <span class="text-base font-extrabold">${state.jesusPrayers}</span></div>
+            <div class="flex gap-1.5">
+              <button type="button" id="btnPrayerPlus1" class="px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-bold">+1</button>
+              <button type="button" id="btnPrayerPlus10" class="px-2.5 py-1 rounded-lg bg-nativity-800 text-white text-xs font-bold">+10</button>
+            </div>
+          </div>
+          <a href="${d.prayer.source.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-bold text-nativity-700 dark:text-nativity-gold hover:underline">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i><span>${d.prayer.source.name}</span>
+          </a>
+        </article>
+
+        <!-- 3. Orthodox Teaching -->
+        <article class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 border-t-4 border-t-teal-600 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-xl bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 flex items-center justify-center">
+                <i data-lucide="scroll-text" class="w-4 h-4"></i>
+              </span>
+              <div>
+                <h2 class="font-extrabold text-sm">3. تعليم أرثوذكسي</h2>
+                <p class="text-[11px] text-teal-700 dark:text-teal-300 font-bold">الأنبا تكلا • إسقفية الشباب • الإكليريكية</p>
+              </div>
+            </div>
+            <button type="button" data-toggle-task="teaching" class="px-3 py-1.5 rounded-xl text-xs font-bold ${isDone('teaching') ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-800'}">
+              ${isDone('teaching') ? '✓ تم' : 'تم - خلصت'}
+            </button>
+          </div>
+          <p class="text-xs text-slate-700 dark:text-slate-200 leading-relaxed">${d.teaching.text}</p>
+          <a href="${d.teaching.source.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-bold text-nativity-700 dark:text-nativity-gold hover:underline">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i><span>المرجع: ${d.teaching.source.name}</span>
+          </a>
+        </article>
+
+        <!-- 4. Practical Mini-Course Lesson (with full explanation + direct YouTube) -->
+        <article class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 border-t-4 ${trackStyle.border} space-y-2.5">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-xl ${trackStyle.bg} flex items-center justify-center shrink-0">
+                <i data-lucide="${trackStyle.icon}" class="w-4 h-4"></i>
+              </span>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <h2 class="font-extrabold text-sm">4. الكورس العملي</h2>
+                  <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${trackStyle.bg}">${d.career.trackAr}</span>
+                </div>
+                <p class="text-xs font-bold text-slate-800 dark:text-white mt-0.5">${d.career.title}</p>
+              </div>
+            </div>
+            <button type="button" data-toggle-task="career" class="px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 ${isDone('career') ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-800'}">
+              ${isDone('career') ? '✓ تم' : 'تم - خلصت'}
+            </button>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700 space-y-1.5">
+            <div class="text-[11px] font-extrabold text-nativity-700 dark:text-nativity-gold">📘 شرح الدرس داخل البرنامج:</div>
+            <p class="text-xs text-slate-700 dark:text-slate-200 leading-relaxed">${d.career.explain}</p>
+          </div>
+          <div class="p-2.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/70 dark:border-emerald-800/50 text-xs">
+            <strong class="text-emerald-800 dark:text-emerald-300">🎯 تطبيق عملي: </strong>${d.career.drill}
+          </div>
+          <a href="${d.career.ytUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-2 px-3 rounded-xl bg-nativity-900 hover:bg-nativity-800 text-white text-xs font-extrabold flex items-center justify-center gap-2 transition">
+            <i data-lucide="youtube" class="w-4 h-4 text-red-400"></i>
+            <span>فيديو يوتيوب مباشر: ${d.career.ytTitle}</span>
+          </a>
+        </article>
+
+        <!-- Shortcut to Dedicated Competition Tab -->
+        <button type="button" data-tab="quiz" class="w-full p-3.5 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 flex items-center justify-between gap-2 text-right">
+          <div class="flex items-center gap-2.5">
+            <span class="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center shrink-0"><i data-lucide="trophy" class="w-5 h-5"></i></span>
+            <div>
+              <div class="text-xs font-extrabold text-purple-900 dark:text-purple-200">مسابقة الصوم الكبرى (العهدين)</div>
+              <div class="text-[11px] text-purple-700 dark:text-purple-300">رصيدك: ${stats.quizScore} نقطة • نافس على أول 3 مراكز!</div>
+            </div>
+          </div>
+          <i data-lucide="chevron-left" class="w-4 h-4 text-purple-600"></i>
+        </button>
+      `;
+    }
+
+    function renderQuizAndLeaderboard() {
+      const stats = getStats();
+      const board = getLiveLeaderboard();
+      const top3 = board.slice(0, 3);
+      const myRank = board.findIndex(x => x.isMe) + 1;
+      const filteredQ = state.quizCatFilter === 'all' ? COMPETITION_BANK : COMPETITION_BANK.filter(q => q.cat === state.quizCatFilter);
+
+      return `
+        <!-- Top 3 Live Podium -->
+        <section class="hero-gradient rounded-2xl p-4 text-white card-shadow space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="text-base font-extrabold flex items-center gap-1.5">🏆 ترتيب المتسابقين (أول 3)</h1>
+              <p class="text-[11px] text-teal-100">يتحدّث تلقائيًا طول الـ 43 يومًا حسب مجموع الدرجات</p>
+            </div>
+            <div class="text-left">
+              <div class="text-xs text-teal-100">ترتيبك الحالي</div>
+              <div class="text-lg font-extrabold text-nativity-gold">#${myRank} (${stats.quizScore} ن)</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 pt-1">
+            ${top3.map((p, idx) => {
+              const medals = ['🥇 الأول', '🥈 الثاني', '🥉 الثالث'];
+              const ring = idx === 0 ? 'bg-amber-400/20 border-amber-300' : 'bg-white/10 border-white/20';
+              return `
+                <div class="rounded-xl p-2.5 border text-center space-y-1 ${ring} ${p.isMe ? 'ring-2 ring-emerald-400' : ''}">
+                  <div class="text-[10px] font-extrabold text-nativity-goldLight">${medals[idx]}</div>
+                  <div class="text-xs font-extrabold truncate">${p.name}</div>
+                  <div class="text-[9.5px] text-teal-100 truncate">${p.meeting}</div>
+                  <div class="text-sm font-extrabold text-white bg-black/20 rounded-lg py-0.5">${p.score} نقطة</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </section>
+
+        ${!state.quizOpen && state.role === 'user' ? `
+          <div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 text-xs font-bold text-amber-900 dark:text-amber-200 text-center">
+            🔒 جولة المسابقة مغلقة مؤقتًا من لوحة التحكم.
+          </div>
+        ` : `
+          <!-- Category Filter -->
+          <div class="flex gap-1.5 overflow-x-auto hide-scrollbar pb-1">
+            ${[
+              { id: 'all', label: `الكل (${COMPETITION_BANK.length})` },
+              { id: 'ot', label: 'العهد القديم (5)' },
+              { id: 'nt', label: 'العهد الجديد (5)' },
+              { id: 'inc', label: 'التجسد الإلهي (5)' },
+              { id: 'mary', label: 'رموز العذراء (5)' }
+            ].map(c => `
+              <button type="button" data-q-cat="${c.id}" class="px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 ${state.quizCatFilter === c.id ? 'bg-purple-700 text-white' : 'bg-white dark:bg-[#11202D] border border-slate-200 dark:border-slate-700'}">${c.label}</button>
+            `).join('')}
+          </div>
+
+          <!-- Questions List -->
+          <div class="space-y-3">
+            ${filteredQ.map((q, num) => {
+              const sel = state.quizAnswers[q.id];
+              return `
+                <article class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 space-y-2.5">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-200">${q.catAr} • +10 نقاط</span>
+                    ${sel !== undefined ? `<span class="text-[11px] font-extrabold ${sel === q.ans ? 'text-emerald-600' : 'text-rose-600'}">${sel === q.ans ? '✓ إجابة صحيحة' : '✕ إجابة خاطئة'}</span>` : ''}
+                  </div>
+                  <h3 class="text-xs font-extrabold leading-relaxed">${num + 1}. ${q.q}</h3>
+                  <div class="space-y-1.5">
+                    ${q.opts.map((opt, idx) => {
+                      let cls = 'bg-slate-50 dark:bg-slate-800/70 border-slate-200 dark:border-slate-700 hover:border-purple-400';
+                      if (sel !== undefined) {
+                        if (idx === q.ans) cls = 'bg-emerald-50 dark:bg-emerald-900/40 border-emerald-500 text-emerald-900 dark:text-emerald-100 font-bold';
+                        else if (idx === sel) cls = 'bg-rose-50 dark:bg-rose-900/40 border-rose-500 text-rose-900 dark:text-rose-100';
+                      }
+                      return `<button type="button" data-comp-q="${q.id}" data-comp-opt="${idx}" class="w-full text-right px-3 py-2 rounded-xl border text-xs transition ${cls}">${opt}</button>`;
+                    }).join('')}
+                  </div>
+                  ${sel !== undefined ? `<div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-[11px] text-slate-700 dark:text-slate-200"><strong>الشرح الأرثوذكسي:</strong> ${q.exp}</div>` : ''}
+                </article>
+              `;
+            }).join('')}
+          </div>
+        `}
+      `;
+    }
+
+    function renderCourses() {
+      const stats = getStats();
+      const tracks = [
+        { id: 'marketing', name: 'ميني كورس الماركيتنج', range: 'الأيام 1–14', done: stats.marketingDone, total: 14, color: 'bg-rose-500' },
+        { id: 'ai', name: 'ميني كورس الذكاء الاصطناعي', range: 'الأيام 15–29', done: stats.aiDone, total: 15, color: 'bg-indigo-500' },
+        { id: 'english', name: 'ميني كورس اللغة الإنجليزية العملية', range: 'الأيام 30–43', done: stats.englishDone, total: 14, color: 'bg-emerald-500' }
+      ];
+      const filtered = state.courseFilter === 'all' ? DAYS_DATA : DAYS_DATA.filter(d => d.career.track === state.courseFilter);
+
+      return `
+        <section class="space-y-3">
+          <div class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 space-y-3">
+            <h1 class="text-base font-extrabold">المسار العملي الموازي (شرح + يوتيوب مباشر)</h1>
+            <p class="text-xs text-slate-600 dark:text-slate-300">كل ماتريال الكورسات الثلاثة موجودة جوا التطبيق: شرح واضح، تطبيق عملي، وفيديو يوتيوب مباشر لكل درس.</p>
+            <div class="space-y-2">
+              ${tracks.map(t => {
+                const pct = Math.round((t.done / t.total) * 100);
+                return `
+                  <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-bold">
+                      <span>${t.name} <span class="text-[10px] text-slate-500">(${t.range})</span></span>
+                      <span>${t.done}/${t.total} (${pct}%)</span>
+                    </div>
+                    <div class="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                      <div class="h-full ${t.color} rounded-full" style="width:${pct}%"></div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <div class="flex gap-1.5 overflow-x-auto hide-scrollbar pb-1">
+            ${[
+              { id: 'all', label: 'الكل (43)' },
+              { id: 'marketing', label: 'ماركيتنج (14)' },
+              { id: 'ai', label: 'ذكاء اصطناعي (15)' },
+              { id: 'english', label: 'إنجليزي عملي (14)' }
+            ].map(f => `
+              <button type="button" data-course-filter="${f.id}" class="px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 ${state.courseFilter === f.id ? 'bg-nativity-800 text-white' : 'bg-white dark:bg-[#11202D] border border-slate-200 dark:border-slate-700'}">${f.label}</button>
+            `).join('')}
+          </div>
+
+          <div class="space-y-2.5">
+            ${filtered.map(d => {
+              const done = !!state.completedTasks[`${d.day}_career`];
+              const isOpen = state.expandedLessonDay === d.day;
+              return `
+                <div class="bg-white dark:bg-[#11202D] rounded-2xl p-3.5 card-shadow border border-slate-200/70 dark:border-slate-800 space-y-2.5">
+                  <div class="flex items-center justify-between gap-2">
+                    <button type="button" data-expand-lesson="${d.day}" class="text-right flex-1 min-w-0">
+                      <div class="flex items-center gap-1.5 mb-0.5">
+                        <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800">يوم ${d.day} • ${d.dateShort}</span>
+                        <span class="text-[10px] font-bold text-nativity-700 dark:text-nativity-gold">${d.career.trackAr}</span>
+                      </div>
+                      <h3 class="text-xs font-extrabold text-slate-800 dark:text-white">${d.career.title}</h3>
+                    </button>
+                    <button type="button" data-toggle-lesson-day="${d.day}" class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold shrink-0 ${done ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-800'}">
+                      ${done ? '✓ مكتمل' : 'تم'}
+                    </button>
+                  </div>
+                  ${isOpen ? `
+                    <div class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2 text-xs">
+                      <p class="text-slate-700 dark:text-slate-200 leading-relaxed">${d.career.explain}</p>
+                      <div class="p-2.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 text-[11px]"><strong>🎯 تطبيق عملي:</strong> ${d.career.drill}</div>
+                      <a href="${d.career.ytUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-2 px-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold flex items-center justify-center gap-2">
+                        <i data-lucide="youtube" class="w-4 h-4"></i><span>شاهد على يوتيوب: ${d.career.ytTitle}</span>
+                      </a>
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderJourney() {
+      const stats = getStats();
+      const weeks = [
+        { title: 'الأسبوع 1: الاستعداد والتوبة (ماركيتنج)', days: DAYS_DATA.slice(0, 7) },
+        { title: 'الأسبوع 2: نبوات العهد القديم (ماركيتنج)', days: DAYS_DATA.slice(7, 14) },
+        { title: 'الأسبوع 3: شهر كيهك والتسبيح (ذكاء اصطناعي)', days: DAYS_DATA.slice(14, 21) },
+        { title: 'الأسبوع 4: البشارة والزيارة (ذكاء اصطناعي)', days: DAYS_DATA.slice(21, 28) },
+        { title: 'الأسبوع 5: لاهوت التجسد (AI + إنجليزي)', days: DAYS_DATA.slice(28, 35) },
+        { title: 'الأسبوع 6: نحو المذود والبرمون (إنجليزي)', days: DAYS_DATA.slice(35, 43) }
+      ];
+      return `
+        <section class="hero-gradient rounded-2xl p-4 text-white card-shadow space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="text-base font-extrabold">خريطة الرحلة – 43 يومًا</h1>
+              <p class="text-xs text-teal-100">إنجاز المهام اليومية: ${stats.totalDone} / ${TOTAL_DAILY_TASKS}</p>
+            </div>
+            <div class="text-2xl font-extrabold text-nativity-gold">${stats.totalPct}%</div>
+          </div>
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="bg-white/10 rounded-xl p-2"><div class="text-base font-extrabold">${stats.fullDays}</div><div class="text-[10px] text-teal-100">أيام كاملة (4/4)</div></div>
+            <div class="bg-white/10 rounded-xl p-2"><div class="text-base font-extrabold">${stats.careerDone}/43</div><div class="text-[10px] text-teal-100">دروس عملية</div></div>
+            <div class="bg-white/10 rounded-xl p-2"><div class="text-base font-extrabold text-nativity-goldLight">${stats.quizScore}</div><div class="text-[10px] text-teal-100">نقاط المسابقة</div></div>
+          </div>
+        </section>
+
+        <section class="space-y-3">
+          ${weeks.map(w => `
+            <div class="bg-white dark:bg-[#11202D] rounded-2xl p-3.5 card-shadow border border-slate-200/70 dark:border-slate-800 space-y-2.5">
+              <h2 class="text-xs font-extrabold text-nativity-800 dark:text-nativity-goldLight">${w.title}</h2>
+              <div class="grid grid-cols-7 gap-1.5">
+                ${w.days.map(d => {
+                  const done = getDayCompletion(d.day);
+                  const locked = state.lockFutureDays && d.day > state.selectedDay && state.role === 'user';
+                  let cls = 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-transparent';
+                  if (done === 4) cls = 'bg-emerald-600 text-white border-emerald-500';
+                  else if (done > 0) cls = 'bg-amber-100 dark:bg-amber-900/50 text-amber-900 dark:text-amber-100 border-amber-400';
+                  if (d.day === state.selectedDay) cls += ' ring-2 ring-nativity-700 dark:ring-nativity-gold';
+                  return `<button type="button" data-jump-day="${d.day}" ${locked ? 'disabled' : ''} class="flex flex-col items-center justify-center py-2 rounded-xl border text-[11px] font-bold ${cls} ${locked ? 'opacity-40' : ''}"><span>${locked ? '🔒' : d.day}</span><span class="text-[9px] opacity-80">${done}/4</span></button>`;
+                }).join('')}
+              </div>
+            </div>
+          `).join('')}
+
+          <div class="gold-gradient rounded-2xl p-4 text-nativity-900 card-shadow flex items-center justify-between gap-3">
+            <div>
+              <div class="text-xs font-extrabold">الخميس 7/1/2027 (29 كيهك)</div>
+              <h3 class="text-base font-extrabold">عيد الميلاد المجيد 🎉</h3>
+              <p class="text-xs font-semibold opacity-90">شهادة النمو الروحي والعملي</p>
+            </div>
+            <button type="button" id="btnJourneyCert" class="px-3.5 py-2 rounded-xl bg-nativity-900 text-white text-xs font-extrabold shrink-0">عرض الشهادة</button>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderAttendance() {
+      const dateIso = state.attendanceDate;
+      const rec = state.attendance[dateIso] || { checks: {}, notes: {} };
+      const sections = [
+        { id: 'liturgy', title: 'القداس الإلهي ⛪', items: ['حضرت القداس', 'تناولت من الأسرار المقدسة', 'ركزت في القراءات'] },
+        { id: 'meeting', title: `الاجتماع (${state.user.meeting}) 👥`, items: ['حضرت الاجتماع الأسبوعي', 'حضرت تسبحة كيهك', 'دوّنت نقطة عملية'] },
+        { id: 'rule', title: 'القانون الروحي اليومي 🙏', items: ['صلاة باكر', 'صلاة النوم', 'سمعت ريلز التأمل', 'صلاة يسوع'] },
+        { id: 'confession', title: 'سر الاعتراف والمحاسبة 💧', items: ['راجعت نفسي بهدوء', 'حددت ميعاد اعتراف', 'اعترفت خلال الصوم'] }
+      ];
+
+      return `
+        <section class="space-y-3">
+          <div class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 space-y-2.5">
+            <div class="flex items-center justify-between gap-2">
+              <h1 class="text-base font-extrabold">المتابعة الروحية والحضور</h1>
+              <input type="date" id="attendanceDateInput" value="${dateIso}" min="2026-11-25" max="2027-01-07" class="text-xs font-bold px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+            </div>
+            <div class="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 text-[11px] text-emerald-900 dark:text-emerald-200">
+              <i data-lucide="lock" class="w-4 h-4 shrink-0 text-emerald-600"></i>
+              <span><strong>خصوصية تامة:</strong> سجل الاعتراف وملاحظاتك مشفّرة لك وحدك ولا تظهر لأي أدمن أو مدير نظام.</span>
+            </div>
+          </div>
+
+          ${sections.map(sec => `
+            <div class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 space-y-2.5">
+              <h2 class="text-sm font-extrabold text-nativity-800 dark:text-nativity-goldLight">${sec.title}</h2>
+              <div class="space-y-2">
+                ${sec.items.map((label, i) => {
+                  const key = `${sec.id}_${i}`;
+                  const checked = !!(rec.checks && rec.checks[key]);
+                  return `<label class="flex items-center gap-2.5 text-xs font-semibold cursor-pointer"><input type="checkbox" data-att-check="${key}" ${checked ? 'checked' : ''} class="w-4 h-4 rounded accent-teal-700" /><span>${label}</span></label>`;
+                }).join('')}
+              </div>
+              <textarea data-att-note="${sec.id}" rows="2" placeholder="ملاحظاتك الخاصة لليوم..." class="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">${(rec.notes && rec.notes[sec.id]) || ''}</textarea>
+            </div>
+          `).join('')}
+        </section>
+      `;
+    }
+
+    function renderSettingsAndProControl() {
+      const stats = getStats();
+      return `
+        <section class="space-y-3">
+          <!-- User Profile & Basic Settings -->
+          <div class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <h1 class="text-sm font-extrabold">${state.user.email || 'حساب المستخدم'}</h1>
+                <p class="text-xs text-teal-700 dark:text-teal-300 font-bold">الاجتماع: ${state.user.meeting}</p>
+              </div>
+              <button type="button" id="btnLogout" class="px-3 py-1.5 rounded-xl bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-200 text-xs font-extrabold">تسجيل خروج</button>
+            </div>
+
+            <div class="flex items-center justify-between text-xs font-bold pt-2 border-t border-slate-100 dark:border-slate-800">
+              <span>حجم الخط</span>
+              <div class="flex gap-1.5">
+                ${[{id:'sm',l:'صغير'},{id:'md',l:'متوسط'},{id:'lg',l:'كبير'}].map(sz => `<button type="button" data-font-size="${sz.id}" class="px-3 py-1 rounded-lg ${state.fontSize === sz.id ? 'bg-nativity-800 text-white' : 'bg-slate-100 dark:bg-slate-800'}">${sz.l}</button>`).join('')}
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-xs font-bold pt-2 border-t border-slate-100 dark:border-slate-800">
+              <span>المنبّه الذكي 🔔</span>
+              <input type="time" id="reminderTimeInput" value="${state.reminderTime}" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+            </div>
+
+            <label class="flex items-center justify-between text-xs font-bold pt-2 border-t border-slate-100 dark:border-slate-800 cursor-pointer">
+              <span>استلام تنبيه واتساب لو مسجلتش دخول</span>
+              <input type="checkbox" id="chkUserWaOptIn" ${state.user.whatsappOptIn ? 'checked' : ''} class="w-4 h-4 accent-emerald-600" />
+            </label>
+          </div>
+
+          <!-- Role Switcher -->
+          <div class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 space-y-2.5">
+            <div class="flex items-center gap-2">
+              <i data-lucide="shield-check" class="w-4 h-4 text-nativity-700 dark:text-nativity-gold"></i>
+              <h2 class="text-sm font-extrabold">لوحة التحكم الاحترافية (صلاحيات صوم الرسل)</h2>
+            </div>
+            <div class="grid grid-cols-3 gap-1.5">
+              ${[{ id: 'user', label: 'مستخدم' }, { id: 'admin', label: 'أدمن خادم' }, { id: 'super_admin', label: 'مدير النظام' }].map(r => `
+                <button type="button" data-set-role="${r.id}" class="py-2 rounded-xl text-xs font-extrabold ${state.role === r.id ? 'bg-nativity-900 text-nativity-goldLight' : 'bg-slate-100 dark:bg-slate-800'}">${r.label}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          ${(state.role === 'admin' || state.role === 'super_admin') ? `
+            <!-- Pro Control Panel with 4 Sub-Tabs -->
+            <div class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border-2 border-nativity-gold/70 space-y-3">
+              <div class="flex gap-1 overflow-x-auto hide-scrollbar pb-1 border-b border-slate-100 dark:border-slate-800">
+                ${[
+                  { id: 'overview', label: 'الإحصائيات والتحكم' },
+                  { id: 'whatsapp', label: 'واتساب الغياب' },
+                  { id: 'emergency', label: `طوارئ (${state.emergencyRequests.length})` },
+                  { id: 'security', label: 'الأمان وRLS' }
+                ].map(t => `
+                  <button type="button" data-admin-sub="${t.id}" class="px-2.5 py-1.5 rounded-lg text-[11px] font-extrabold shrink-0 ${state.adminSubTab === t.id ? 'bg-nativity-900 text-nativity-goldLight' : 'bg-slate-100 dark:bg-slate-800'}">${t.label}</button>
+                `).join('')}
+              </div>
+
+              ${state.adminSubTab === 'overview' ? `
+                <div class="space-y-3 text-xs">
+                  <div class="font-extrabold text-nativity-800 dark:text-nativity-goldLight">توزيع الاجتماعات الـ 3 (بيانات تجريبية للمعاينة):</div>
+                  <div class="grid grid-cols-3 gap-1.5 text-center">
+                    <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800"><div class="font-extrabold text-sm">64%</div><div class="text-[10px]">مارمينا خريجين</div></div>
+                    <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800"><div class="font-extrabold text-sm">58%</div><div class="text-[10px]">الملاك ميخائيل</div></div>
+                    <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800"><div class="font-extrabold text-sm">61%</div><div class="text-[10px]">القديس أغسطينوس</div></div>
+                  </div>
+                  <div class="space-y-1.5">
+                    <label class="font-bold block">تنبيه عام أعلى الرئيسية:</label>
+                    <div class="flex gap-1.5">
+                      <input id="adminAnnInput" type="text" value="${state.announcement}" class="flex-1 text-xs p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+                      <button type="button" id="btnPublishAnn" class="px-3 py-2 rounded-xl bg-nativity-800 text-white font-bold">نشر</button>
+                    </div>
+                  </div>
+                  <label class="flex items-center justify-between p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 font-bold cursor-pointer">
+                    <span>فتح مسابقة الصوم للمتسابقين</span>
+                    <input type="checkbox" id="chkQuizOpen" ${state.quizOpen ? 'checked' : ''} class="w-4 h-4 accent-purple-700" />
+                  </label>
+                  ${state.role === 'super_admin' ? `
+                    <label class="flex items-center justify-between p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 font-bold cursor-pointer">
+                      <span>قفل الأيام المستقبلية (التزام يوم بيوم)</span>
+                      <input type="checkbox" id="chkLockFuture" ${state.lockFutureDays ? 'checked' : ''} class="w-4 h-4 accent-amber-600" />
+                    </label>
+                  ` : ''}
+                </div>
+              ` : ''}
+
+              ${state.adminSubTab === 'whatsapp' ? `
+                <div class="space-y-3 text-xs">
+                  <div class="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[11px] text-emerald-900 dark:text-emerald-200">
+                    <strong>أتمتة تنبيهات واتساب:</strong> في نسخة Lovable + Supabase يعمل Cron يومي الساعة ${state.whatsappConfig.checkTime} لفحص من لم يسجل دخول وإرسال رسالة تلقائية عبر WhatsApp Cloud API.
+                  </div>
+                  <div class="flex items-center justify-between font-bold">
+                    <span>ساعة الفحص اليومي للغياب:</span>
+                    <input type="time" id="waCheckTime" value="${state.whatsappConfig.checkTime}" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
+                  </div>
+                  <div class="space-y-1">
+                    <label class="font-bold block">قالب رسالة الواتساب:</label>
+                    <textarea id="waTemplateInput" rows="3" class="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px]">${state.whatsappConfig.template}</textarea>
+                  </div>
+                  <div class="space-y-1.5">
+                    <div class="font-extrabold">لم يسجلوا دخول اليوم (قائمة تجريبية):</div>
+                    ${state.inactiveDemoUsers.map(u => {
+                      const msg = encodeURIComponent(state.whatsappConfig.template.replace('{الاسم}', u.name).replace('{اليوم}', state.selectedDay));
+                      return `
+                        <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 flex items-center justify-between gap-2">
+                          <div>
+                            <div class="font-extrabold">${u.name}</div>
+                            <div class="text-[10px] text-slate-500">${u.meeting} • غائب ${u.missedDays} يوم</div>
+                          </div>
+                          <div class="flex gap-1">
+                            <a href="https://wa.me/${u.phone}?text=${msg}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white text-[10px] font-bold">واتساب</a>
+                            <button type="button" data-wa-sim="${u.id}" class="px-2 py-1.5 rounded-lg ${u.sent ? 'bg-slate-300 text-slate-700' : 'bg-nativity-800 text-white'} text-[10px] font-bold">${u.sent ? '✓ أُرسل' : 'محاكاة API'}</button>
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+              ` : ''}
+
+              ${state.adminSubTab === 'emergency' ? `
+                <div class="space-y-2 text-xs">
+                  ${state.emergencyRequests.map(req => `
+                    <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-1.5">
+                      <div class="flex items-center justify-between">
+                        <span class="font-extrabold">${req.type}</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-100 text-teal-800">${req.status}</span>
+                      </div>
+                      <div class="text-[10px] text-slate-500">الاجتماع: ${req.meeting || state.user.meeting}</div>
+                      <p class="text-[11px]">${req.note}</p>
+                      <div class="flex gap-1.5">
+                        ${['جديد', 'جاري المتابعة', 'تم التواصل'].map(st => `
+                          <button type="button" data-req-id="${req.id}" data-req-status="${st}" class="px-2 py-1 rounded-lg text-[10px] font-bold ${req.status === st ? 'bg-nativity-800 text-white' : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600'}">${st}</button>
+                        `).join('')}
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
+
+              ${state.adminSubTab === 'security' ? `
+                <div class="space-y-2.5 text-[11px]">
+                  <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 space-y-1">
+                    <div>🔒 <strong>حماية الاعتراف والحضور (RLS):</strong> مملوك للمستخدم فقط (<span class="ltr-text">auth.uid() = user_id</span>) ومحجوب عن الأدمن ومدير النظام.</div>
+                    <div>🛡️ <strong>عزل الصلاحيات:</strong> جدول <span class="ltr-text">user_roles</span> منفصل يمنع تصعيد الصلاحيات.</div>
+                    <div>📱 <strong>خصوصية واتساب:</strong> لا يُرسل أي تذكير إلا بعد موافقة المستخدم (<span class="ltr-text">whatsapp_opt_in = true</span>).</div>
+                  </div>
+                  <div class="font-extrabold text-xs">سجل التدقيق الأمني (Audit Log):</div>
+                  <div class="space-y-1 max-h-36 overflow-y-auto">
+                    ${state.auditLog.map(l => `<div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 flex justify-between gap-2"><span><strong>${l.actor}:</strong> ${l.action}</span><span class="text-slate-400 shrink-0">${l.time}</span></div>`).join('')}
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
+        </section>
+      `;
+    }
+
+    function openEmergencyHubModal() {
+      const cards = [
+        { type: 'محتاج أرتب اعترافي 💧', desc: 'تواصل سري لترتيب ميعاد مع أب كاهن' },
+        { type: 'عايز أحضر قداس ⛪', desc: 'معرفة مواعيد قداسات وتسابيح صوم الميلاد' },
+        { type: 'عندي سؤال ❓', desc: 'سؤال عقيدي، طقسي، أو عن الكورسات العملية' },
+        { type: 'محتاج حد يسمعني 🫂', desc: 'دعم روحي وإنساني في سرية تامة' }
+      ];
+      openModal('طوارئ روحية 🚨', `
+        <p class="text-xs text-slate-600 dark:text-slate-300">مش لازم تكمل لوحدك. اختر نوع الطلب واكتب رسالتك وسيتواصل معك خادم من <strong>${state.user.meeting}</strong> بسرية تامة:</p>
+        <div class="space-y-2">
+          <select id="emTypeSelect" class="w-full text-xs font-bold p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+            ${cards.map(c => `<option value="${c.type}">${c.type}</option>`).join('')}
+          </select>
+          <textarea id="emNoteInput" rows="3" placeholder="اكتب تفاصيل مختصرة..." class="w-full text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"></textarea>
+          <button type="button" id="btnSubmitEmergency" class="w-full py-2.5 rounded-xl bg-rose-700 text-white text-xs font-extrabold">إرسال الطلب بسرية</button>
+        </div>
+      `);
+    }
+
+    function openCertificateModal() {
+      const stats = getStats();
+      openModal('شهادة إتمام رحلة صوم الميلاد 🎉', `
+        <div class="hero-gradient rounded-2xl p-4 text-white text-center space-y-1.5">
+          <div class="text-xs font-bold text-nativity-goldLight">${state.user.meeting} • عيد الميلاد 7/1/2027</div>
+          <div class="text-lg font-extrabold">نمو مزدوج: روحي + عملي</div>
+          <div class="text-3xl font-extrabold text-nativity-gold">${stats.totalPct}%</div>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-center">
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><div class="text-base font-extrabold">${stats.totalDone} / ${TOTAL_DAILY_TASKS}</div><div class="text-[11px] text-slate-500">المهام اليومية</div></div>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><div class="text-base font-extrabold text-amber-600">${state.jesusPrayers}</div><div class="text-[11px] text-slate-500">صلاة يسوع</div></div>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><div class="text-base font-extrabold text-purple-600">${stats.quizScore} نقطة</div><div class="text-[11px] text-slate-500">مسابقة العهدين</div></div>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><div class="text-base font-extrabold text-emerald-600">${stats.careerDone} / 43</div><div class="text-[11px] text-slate-500">الكورسات العملية</div></div>
+        </div>
+      `);
+    }
+
+    // =========================================================================
+    // 8. MAIN RENDER & EVENTS
+    // =========================================================================
+    function render() {
+      document.documentElement.classList.toggle('dark', state.darkMode);
+      document.body.classList.remove('font-size-sm', 'font-size-md', 'font-size-lg');
+      document.body.classList.add(`font-size-${state.fontSize}`);
+
+      const topHeader = document.getElementById('topHeader');
+      const bottomNav = document.getElementById('bottomNav');
+      const banner = document.getElementById('announcementBanner');
+      const main = document.getElementById('mainContent');
+
+      if (!state.isLoggedIn) {
+        topHeader.classList.add('hidden');
+        bottomNav.classList.add('hidden');
+        banner.classList.add('hidden');
+        main.innerHTML = renderLogin();
+        lucide.createIcons();
+        return;
+      }
+
+      topHeader.classList.remove('hidden');
+      bottomNav.classList.remove('hidden');
+      document.getElementById('darkIcon').setAttribute('data-lucide', state.darkMode ? 'sun' : 'moon');
+      document.getElementById('headerMeetingLabel').textContent = `${state.user.meeting} • 43 يومًا`;
+
+      const roleMap = {
+        user: { text: 'مستخدم', cls: 'bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-200' },
+        admin: { text: 'أدمن خادم', cls: 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200' },
+        super_admin: { text: 'مدير النظام', cls: 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-200' }
+      }[state.role];
+      const rb = document.getElementById('roleBadge');
+      rb.textContent = roleMap.text;
+      rb.className = `text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${roleMap.cls}`;
+
+      if (state.announcement && state.announcement.trim()) {
+        document.getElementById('announcementText').textContent = state.announcement;
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+
+      if (state.activeTab === 'home') main.innerHTML = renderHome();
+      else if (state.activeTab === 'journey') main.innerHTML = renderJourney();
+      else if (state.activeTab === 'courses') main.innerHTML = renderCourses();
+      else if (state.activeTab === 'quiz') main.innerHTML = renderQuizAndLeaderboard();
+      else if (state.activeTab === 'attendance') main.innerHTML = renderAttendance();
+      else if (state.activeTab === 'settings') main.innerHTML = renderSettingsAndProControl();
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        const active = btn.dataset.tab === state.activeTab;
+        btn.classList.toggle('text-nativity-800', active && !state.darkMode);
+        btn.classList.toggle('dark:text-nativity-gold', active);
+        btn.classList.toggle('bg-teal-50', active && !state.darkMode);
+        btn.classList.toggle('dark:bg-slate-800', active);
+        btn.classList.toggle('text-slate-500', !active);
+      });
+
+      lucide.createIcons();
+    }
+
+    document.addEventListener('submit', (e) => {
+      if (e.target.id === 'loginForm') {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim();
+        const meeting = document.getElementById('loginMeeting').value;
+        const whatsapp = document.getElementById('loginWhatsapp').value.trim();
+        state.user = { email, name: email.split('@')[0], meeting, whatsapp, whatsappOptIn: true };
+        state.isLoggedIn = true;
+        state.activeTab = 'home';
+        saveState();
+        render();
+        showToast(`أهلًا بيك في رحلة صوم الميلاد – ${meeting} ✝️`);
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('#btnDemoLogin')) {
+        state.user = { email: 'demo@onamission.app', name: 'خادم تجريبي', meeting: 'مارمينا خريجين', whatsapp: '01000000000', whatsappOptIn: true };
+        state.isLoggedIn = true;
+        state.activeTab = 'home';
+        saveState();
+        render();
+        showToast('تم الدخول التجريبي بنجاح ✓');
+        return;
+      }
+      if (e.target.closest('#btnLogout')) {
+        state.isLoggedIn = false;
+        saveState();
+        render();
+        return;
+      }
+      const nav = e.target.closest('[data-tab]');
+      if (nav) {
+        state.activeTab = nav.dataset.tab;
+        saveState();
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      if (e.target.closest('#btnSosTop')) { openEmergencyHubModal(); return; }
+      if (e.target.closest('#btnDarkToggle')) { state.darkMode = !state.darkMode; saveState(); render(); return; }
+      if (e.target.closest('#btnQuickRole')) {
+        const order = ['user', 'admin', 'super_admin'];
+        state.role = order[(order.indexOf(state.role) + 1) % order.length];
+        state.activeTab = 'settings';
+        saveState();
+        render();
+        showToast(`تم التبديل إلى: ${state.role === 'user' ? 'مستخدم' : state.role === 'admin' ? 'أدمن خادم' : 'مدير النظام'}`);
+        return;
+      }
+      if (e.target.closest('#btnCloseModal') || e.target.id === 'modalOverlay') { closeModal(); return; }
+      if (e.target.closest('#btnOpenCert') || e.target.closest('#btnJourneyCert')) { openCertificateModal(); return; }
+      if (e.target.closest('#btnPrevDay') && state.selectedDay > 1) { state.selectedDay--; saveState(); render(); return; }
+      if (e.target.closest('#btnNextDay') && state.selectedDay < 43) {
+        if (state.lockFutureDays && state.role === 'user') { showToast('مدير النظام فعّل قفل الأيام المستقبلية'); return; }
+        state.selectedDay++; saveState(); render(); return;
+      }
+      const jump = e.target.closest('[data-jump-day]');
+      if (jump && !jump.disabled) { state.selectedDay = Number(jump.dataset.jumpDay); state.activeTab = 'home'; saveState(); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+      const tt = e.target.closest('[data-toggle-task]');
+      if (tt) {
+        const key = `${state.selectedDay}_${tt.dataset.toggleTask}`;
+        state.completedTasks[key] = !state.completedTasks[key];
+        saveState(); render();
+        if (state.completedTasks[key]) showToast('تم تسجيل الإنجاز ✓');
+        return;
+      }
+      if (e.target.closest('#btnPrayerPlus1')) { state.jesusPrayers += 1; saveState(); render(); return; }
+      if (e.target.closest('#btnPrayerPlus10')) { state.jesusPrayers += 10; saveState(); render(); showToast('+10 صلوات يسوع 🙏'); return; }
+      const cf = e.target.closest('[data-course-filter]');
+      if (cf) { state.courseFilter = cf.dataset.courseFilter; saveState(); render(); return; }
+      const expL = e.target.closest('[data-expand-lesson]');
+      if (expL) { const day = Number(expL.dataset.expandLesson); state.expandedLessonDay = state.expandedLessonDay === day ? null : day; saveState(); render(); return; }
+      const tglL = e.target.closest('[data-toggle-lesson-day]');
+      if (tglL) { const key = `${tglL.dataset.toggleLessonDay}_career`; state.completedTasks[key] = !state.completedTasks[key]; saveState(); render(); return; }
+      const qCat = e.target.closest('[data-q-cat]');
+      if (qCat) { state.quizCatFilter = qCat.dataset.qCat; saveState(); render(); return; }
+      const compOpt = e.target.closest('[data-comp-q]');
+      if (compOpt) {
+        const qId = compOpt.dataset.compQ;
+        const optIdx = Number(compOpt.dataset.compOpt);
+        state.quizAnswers[qId] = optIdx;
+        saveState(); render();
+        const qObj = COMPETITION_BANK.find(x => x.id === qId);
+        showToast(qObj && optIdx === qObj.ans ? 'إجابة صحيحة! +10 نقاط وتحديث الترتيب 🏆' : 'راجع الشرح الأرثوذكسي وجرب السؤال التالي');
+        return;
+      }
+      if (e.target.closest('#btnSubmitEmergency')) {
+        const type = document.getElementById('emTypeSelect').value;
+        const note = document.getElementById('emNoteInput').value.trim() || 'طلب تواصل سريع';
+        state.emergencyRequests.unshift({ id: `REQ-${103 + state.emergencyRequests.length}`, meeting: state.user.meeting, type, note, status: 'جديد' });
+        saveState(); closeModal(); showToast('تم إرسال طلبك بسرية للخادم المختص ✓');
+        return;
+      }
+      const fs = e.target.closest('[data-font-size]');
+      if (fs) { state.fontSize = fs.dataset.fontSize; saveState(); render(); return; }
+      const rb = e.target.closest('[data-set-role]');
+      if (rb) { state.role = rb.dataset.setRole; saveState(); render(); return; }
+      const asub = e.target.closest('[data-admin-sub]');
+      if (asub) { state.adminSubTab = asub.dataset.adminSub; saveState(); render(); return; }
+      if (e.target.closest('#btnPublishAnn')) {
+        state.announcement = document.getElementById('adminAnnInput').value.trim();
+        state.auditLog.unshift({ time: 'الآن', actor: state.role === 'super_admin' ? 'مدير النظام' : 'أدمن خادم', action: 'تحديث التنبيه العام' });
+        saveState(); render(); showToast('تم نشر التنبيه ✓'); return;
+      }
+      const reqB = e.target.closest('[data-req-id]');
+      if (reqB) {
+        const r = state.emergencyRequests.find(x => x.id === reqB.dataset.reqId);
+        if (r) { r.status = reqB.dataset.reqStatus; state.auditLog.unshift({ time: 'الآن', actor: 'أدمن خادم', action: `تحديث حالة ${r.id} إلى (${r.status})` }); saveState(); render(); showToast(`تم التحديث إلى: ${r.status}`); }
+        return;
+      }
+      const waSim = e.target.closest('[data-wa-sim]');
+      if (waSim) {
+        const u = state.inactiveDemoUsers.find(x => x.id === waSim.dataset.waSim);
+        if (u) {
+          u.sent = true;
+          state.auditLog.unshift({ time: 'الآن', actor: 'أتمتة واتساب', action: `إرسال تذكير غياب إلى ${u.name} (${u.meeting})` });
+          saveState(); render(); showToast(`تمت محاكاة إرسال رسالة واتساب إلى ${u.name} ✓`);
+        }
+      }
+    });
+
+    document.addEventListener('change', (e) => {
+      if (e.target.id === 'attendanceDateInput') { state.attendanceDate = e.target.value; saveState(); render(); return; }
+      if (e.target.dataset.attCheck) {
+        const d = state.attendanceDate;
+        if (!state.attendance[d]) state.attendance[d] = { checks: {}, notes: {} };
+        state.attendance[d].checks[e.target.dataset.attCheck] = e.target.checked;
+        saveState(); return;
+      }
+      if (e.target.id === 'reminderTimeInput') { state.reminderTime = e.target.value; saveState(); showToast(`تم ضبط المنبّه على ${state.reminderTime}`); return; }
+      if (e.target.id === 'chkUserWaOptIn') { state.user.whatsappOptIn = e.target.checked; saveState(); showToast(e.target.checked ? 'تم تفعيل تذكير واتساب ✓' : 'تم إيقاف تذكير واتساب'); return; }
+      if (e.target.id === 'chkQuizOpen') { state.quizOpen = e.target.checked; state.auditLog.unshift({ time: 'الآن', actor: 'الأدمن', action: e.target.checked ? 'فتح المسابقة' : 'إغلاق المسابقة مؤقتًا' }); saveState(); render(); return; }
+      if (e.target.id === 'chkLockFuture') { state.lockFutureDays = e.target.checked; state.auditLog.unshift({ time: 'الآن', actor: 'مدير النظام', action: e.target.checked ? 'قفل الأيام المستقبلية' : 'فتح كل الأيام' }); saveState(); render(); return; }
+      if (e.target.id === 'waCheckTime') { state.whatsappConfig.checkTime = e.target.value; saveState(); showToast(`تم ضبط فحص الغياب على ${e.target.value}`); return; }
+    });
+
+    document.addEventListener('input', (e) => {
+      if (e.target.dataset.attNote) {
+        const d = state.attendanceDate;
+        if (!state.attendance[d]) state.attendance[d] = { checks: {}, notes: {} };
+        state.attendance[d].notes[e.target.dataset.attNote] = e.target.value;
+        saveState(); return;
+      }
+      if (e.target.id === 'waTemplateInput') { state.whatsappConfig.template = e.target.value; saveState(); }
+    });
+
+
+    // =========================================================================
+    // 9. SUPABASE LIVE SYNC LAYER (Activates automatically once keys are set)
+    // =========================================================================
+    async function syncFromSupabase(userObj) {
+      if (!sb || !userObj) return;
+      try {
+        const uid = userObj.id;
+        const { data: prof } = await sb.from('profiles').select('*').eq('id', uid).maybeSingle();
+        if (prof) {
+          state.user = {
+            id: uid,
+            email: prof.email,
+            name: prof.full_name,
+            meeting: prof.meeting,
+            whatsapp: prof.whatsapp || '',
+            whatsappOptIn: !!prof.whatsapp_opt_in
+          };
+          state.jesusPrayers = prof.jesus_prayers || 0;
+          await sb.from('profiles').update({ last_active_date: new Date().toISOString().slice(0, 10) }).eq('id', uid);
+        }
+        const { data: roleRow } = await sb.from('user_roles').select('role').eq('user_id', uid).maybeSingle();
+        if (roleRow && roleRow.role) {
+          state.role = roleRow.role === 'servant_admin' ? 'admin' : roleRow.role;
+        }
+        const { data: progRows } = await sb.from('user_progress').select('day_num,task_key').eq('user_id', uid);
+        if (Array.isArray(progRows)) {
+          state.completedTasks = {};
+          progRows.forEach(r => { state.completedTasks[`${r.day_num}_${r.task_key}`] = true; });
+        }
+        const { data: qRows } = await sb.from('quiz_answers').select('question_id,selected_option').eq('user_id', uid);
+        if (Array.isArray(qRows)) {
+          state.quizAnswers = {};
+          qRows.forEach(r => { state.quizAnswers[r.question_id] = r.selected_option; });
+        }
+        const { data: cfg } = await sb.from('app_settings').select('*').eq('id', 1).maybeSingle();
+        if (cfg) {
+          state.announcement = cfg.announcement || '';
+          state.quizOpen = !!cfg.quiz_open;
+          state.lockFutureDays = !!cfg.lock_future_days;
+          state.whatsappConfig.checkTime = cfg.wa_check_time || '20:00';
+          state.whatsappConfig.template = cfg.wa_template || state.whatsappConfig.template;
+        }
+        const { data: lb } = await sb.rpc('get_live_leaderboard');
+        if (Array.isArray(lb)) liveLeaderboardCache = lb;
+
+        if (state.role === 'admin' || state.role === 'super_admin') {
+          const { data: em } = await sb.from('emergency_requests').select('*').order('created_at', { ascending: false }).limit(30);
+          if (Array.isArray(em)) {
+            state.emergencyRequests = em.map(x => ({ id: String(x.id), meeting: x.meeting, type: x.request_type, note: x.note, status: x.status }));
+          }
+          const { data: wa } = await sb.rpc('get_inactive_whatsapp_users');
+          if (Array.isArray(wa)) {
+            state.inactiveDemoUsers = wa.map(u => ({ id: u.user_id, name: u.full_name, meeting: u.meeting, phone: (u.whatsapp || '').replace(/^0/, '20'), missedDays: 1, sent: false }));
+          }
+          const { data: logs } = await sb.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(20);
+          if (Array.isArray(logs)) {
+            state.auditLog = logs.map(l => ({ time: new Date(l.created_at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }), actor: l.actor_email, action: l.action }));
+          }
+        }
+        state.isLoggedIn = true;
+        saveState();
+        render();
+      } catch (err) {
+        showToast('تم الاتصال جزئيًا — تأكد من تشغيل setup_supabase.sql');
+      }
+    }
+
+    async function handleSupabaseAuth(mode) {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const meeting = document.getElementById('loginMeeting').value;
+      const whatsapp = document.getElementById('loginWhatsapp').value.trim();
+      const fullName = (document.getElementById('loginName') && document.getElementById('loginName').value.trim()) || email.split('@')[0];
+
+      if (!email || !password) { showToast('اكتب الإيميل والباسورد أولًا'); return; }
+
+      if (!sb) {
+        state.user = { id: 'local_user', email, name: fullName, meeting, whatsapp, whatsappOptIn: true };
+        state.isLoggedIn = true;
+        state.activeTab = 'home';
+        saveState();
+        render();
+        showToast(`أهلًا بيك في رحلة صوم الميلاد – ${meeting} ✝️`);
+        return;
+      }
+
+      try {
+        let authRes;
+        if (mode === 'signup') {
+          authRes = await sb.auth.signUp({ email, password });
+          if (authRes.error) throw authRes.error;
+          if (authRes.data && authRes.data.user) {
+            await sb.from('profiles').upsert({
+              id: authRes.data.user.id,
+              email,
+              full_name: fullName,
+              meeting,
+              whatsapp,
+              whatsapp_opt_in: true,
+              last_active_date: new Date().toISOString().slice(0, 10)
+            });
+            showToast('تم إنشاء حسابك بنجاح! 🎉');
+            await syncFromSupabase(authRes.data.user);
+          }
+        } else {
+          authRes = await sb.auth.signInWithPassword({ email, password });
+          if (authRes.error) throw authRes.error;
+          if (authRes.data && authRes.data.user) {
+            await sb.from('profiles').upsert({
+              id: authRes.data.user.id,
+              email,
+              full_name: fullName,
+              meeting,
+              whatsapp,
+              last_active_date: new Date().toISOString().slice(0, 10)
+            }, { onConflict: 'id' });
+            showToast('تم تسجيل الدخول بنجاح ✝️');
+            await syncFromSupabase(authRes.data.user);
+          }
+        }
+      } catch (err) {
+        showToast(err && err.message ? `خطأ: ${err.message}` : 'تأكد من الإيميل والباسورد');
+      }
+    }
+
+    // Intercept signup button & live DB writes
+    document.addEventListener('click', async (e) => {
+      if (e.target.closest('#btnSignUpSubmit')) {
+        await handleSupabaseAuth('signup');
+        return;
+      }
+      if (!sb || !state.user.id) return;
+
+      const tt = e.target.closest('[data-toggle-task]');
+      if (tt) {
+        const key = tt.dataset.toggleTask;
+        const done = !!state.completedTasks[`${state.selectedDay}_${key}`];
+        if (done) await sb.from('user_progress').upsert({ user_id: state.user.id, day_num: state.selectedDay, task_key: key });
+        else await sb.from('user_progress').delete().match({ user_id: state.user.id, day_num: state.selectedDay, task_key: key });
+      }
+      const compOpt = e.target.closest('[data-comp-q]');
+      if (compOpt) {
+        const qId = compOpt.dataset.compQ;
+        const idx = Number(compOpt.dataset.compOpt);
+        const qObj = COMPETITION_BANK.find(x => x.id === qId);
+        const ok = !!(qObj && idx === qObj.ans);
+        await sb.from('quiz_answers').upsert({ user_id: state.user.id, question_id: qId, selected_option: idx, is_correct: ok, points: ok ? 10 : 0 });
+        const { data: lb } = await sb.rpc('get_live_leaderboard');
+        if (Array.isArray(lb)) { liveLeaderboardCache = lb; render(); }
+      }
+      if (e.target.closest('#btnPrayerPlus1') || e.target.closest('#btnPrayerPlus10')) {
+        await sb.from('profiles').update({ jesus_prayers: state.jesusPrayers }).eq('id', state.user.id);
+      }
+      if (e.target.closest('#btnSubmitEmergency')) {
+        const latest = state.emergencyRequests[0];
+        if (latest) await sb.from('emergency_requests').insert({ user_id: state.user.id, user_name: state.user.name, meeting: state.user.meeting, request_type: latest.type, note: latest.note });
+      }
+      if (e.target.closest('#btnPublishAnn')) {
+        await sb.from('app_settings').update({ announcement: state.announcement, updated_at: new Date().toISOString() }).eq('id', 1);
+      }
+      const reqB = e.target.closest('[data-req-id]');
+      if (reqB) {
+        await sb.from('emergency_requests').update({ status: reqB.dataset.reqStatus }).eq('id', Number(reqB.dataset.reqId));
+      }
+      if (e.target.closest('#btnLogout')) {
+        await sb.auth.signOut();
+      }
+    });
+
+    document.addEventListener('change', async (e) => {
+      if (!sb || !state.user.id) return;
+      if (e.target.dataset.attCheck) {
+        const d = state.attendanceDate;
+        const rec = state.attendance[d] || { checks: {}, notes: {} };
+        await sb.from('attendance_logs').upsert({ user_id: state.user.id, log_date: d, checks: rec.checks, notes: rec.notes, updated_at: new Date().toISOString() });
+      }
+      if (e.target.id === 'chkUserWaOptIn') {
+        await sb.from('profiles').update({ whatsapp_opt_in: e.target.checked }).eq('id', state.user.id);
+      }
+      if (e.target.id === 'chkQuizOpen') {
+        await sb.from('app_settings').update({ quiz_open: e.target.checked, updated_at: new Date().toISOString() }).eq('id', 1);
+      }
+      if (e.target.id === 'chkLockFuture') {
+        await sb.from('app_settings').update({ lock_future_days: e.target.checked, updated_at: new Date().toISOString() }).eq('id', 1);
+      }
+      if (e.target.id === 'waCheckTime') {
+        await sb.from('app_settings').update({ wa_check_time: e.target.value, updated_at: new Date().toISOString() }).eq('id', 1);
+      }
+    });
+
+    // Replace local-only form submit with Supabase-aware handler
+    document.addEventListener('submit', async (e) => {
+      if (e.target.id === 'loginForm' && sb) {
+        e.preventDefault();
+        await handleSupabaseAuth('signin');
+      }
+    }, true);
+
+    if (sb) {
+      sb.auth.getSession().then(({ data }) => {
+        if (data && data.session && data.session.user) syncFromSupabase(data.session.user);
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>
