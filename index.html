@@ -26,7 +26,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Cairo:wght@600;700;800&family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -53,17 +53,23 @@
   </script>
   <style>
     body {
-      font-family: 'Cairo', system-ui, -apple-system, sans-serif;
-      background-color: #EFECE6;
+      font-family: 'IBM Plex Sans Arabic', 'Cairo', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at top, #EAE5DC 0%, #E2DDD3 100%);
       -webkit-tap-highlight-color: transparent;
+      font-variant-numeric: tabular-nums;
     }
-    html.dark body { background-color: #07111A; }
+    html.dark body { background: radial-gradient(circle at top, #08131E 0%, #050C14 100%); }
     html.font-size-sm { font-size: 14px; }
     html.font-size-md { font-size: 16px; }
     html.font-size-lg { font-size: 19px; }
-    .hero-gradient { background: linear-gradient(135deg, #092438 0%, #134C66 55%, #1A697D 100%); }
-    .gold-gradient { background: linear-gradient(135deg, #D4A24C 0%, #E7BE73 100%); }
-    .card-shadow { box-shadow: 0 6px 20px -6px rgba(9, 36, 56, 0.12); }
+    .hero-gradient { background: linear-gradient(145deg, #071E30 0%, #0F4058 55%, #166278 100%); }
+    .gold-gradient { background: linear-gradient(135deg, #C99438 0%, #ECC375 100%); }
+    .card-shadow { box-shadow: 0 4px 18px -4px rgba(9, 36, 56, 0.08), 0 1px 3px rgba(9, 36, 56, 0.04); }
+    .native-btn { transition: transform 0.14s ease, box-shadow 0.14s ease, background-color 0.15s ease; }
+    .native-btn:active { transform: scale(0.97); }
+    .squircle { border-radius: 14px; }
+    .nav-pill-active { background: linear-gradient(135deg, rgba(21,84,110,0.14) 0%, rgba(212,162,76,0.14) 100%); }
+    html.dark .nav-pill-active { background: linear-gradient(135deg, rgba(212,162,76,0.22) 0%, rgba(21,84,110,0.28) 100%); }
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     .ltr-text { direction: ltr; unicode-bidi: embed; font-family: 'Inter', sans-serif; }
@@ -111,8 +117,8 @@
     <!-- Main Container -->
     <main id="mainContent" class="flex-1 px-4 pt-3 pb-24 space-y-4 overflow-y-auto"></main>
 
-    <!-- Bottom Fixed Navigation (7 Tabs with القراءات as a main tab) -->
-    <nav id="bottomNav" class="hidden fixed bottom-0 w-full max-w-md z-30 bg-white/95 dark:bg-[#0B141C]/95 backdrop-blur border-t border-slate-200 dark:border-slate-800 px-0.5 py-1.5 grid grid-cols-7 gap-0.5">
+    <!-- Bottom Fixed Navigation (Native Play Store App Tab Bar) -->
+    <nav id="bottomNav" class="hidden fixed bottom-0 w-full max-w-md z-30 bg-white/90 dark:bg-[#0B151F]/92 backdrop-blur-xl border-t border-slate-200/80 dark:border-slate-800/80 px-1 pt-1.5 pb-2 grid grid-cols-7 gap-0.5 shadow-[0_-6px_24px_rgba(0,0,0,0.06)]">
       <button type="button" data-tab="home" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[9.5px] font-bold transition">
         <i data-lucide="home" class="w-4 h-4 mb-0.5"></i><span>الرئيسية</span>
       </button>
@@ -137,9 +143,10 @@
     </nav>
   </div>
 
-  <!-- Modal -->
-  <div id="modalOverlay" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
-    <div id="modalCard" class="w-full max-w-md max-h-[88vh] overflow-y-auto bg-white dark:bg-[#11202D] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-5 space-y-4">
+  <!-- Native Bottom-Sheet Modal -->
+  <div id="modalOverlay" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-3">
+    <div id="modalCard" class="w-full max-w-md max-h-[90vh] overflow-y-auto bg-white dark:bg-[#101E2B] rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-700/80 px-5 pt-3 pb-6 space-y-4">
+      <div class="w-10 h-1 rounded-full bg-slate-300 dark:bg-slate-600 mx-auto sm:hidden"></div>
       <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
         <h3 id="modalTitle" class="font-extrabold text-base text-nativity-900 dark:text-white"></h3>
         <button id="btnCloseModal" type="button" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500">
@@ -717,20 +724,31 @@
       }[d.career.track];
 
       return `
-        <!-- Hero -->
-        <section class="hero-gradient rounded-2xl p-4 text-white card-shadow space-y-3">
-          <div class="flex items-start justify-between gap-2">
-            <div>
-              <span class="inline-flex items-center gap-1 text-[10.5px] font-bold px-2.5 py-0.5 rounded-full bg-white/15 text-nativity-goldLight mb-1">
+        <!-- Native App Hero Card with Circular Progress Ring -->
+        <section class="hero-gradient rounded-3xl p-4 text-white card-shadow space-y-3.5 relative overflow-hidden">
+          <div class="flex items-center justify-between gap-3">
+            <div class="min-w-0 flex-1">
+              <span class="inline-flex items-center gap-1 text-[10.5px] font-bold px-2.5 py-0.5 rounded-full bg-white/15 text-nativity-goldLight mb-1.5 backdrop-blur">
                 ✝️ ${state.user.meeting}
               </span>
               <h1 class="text-lg font-extrabold leading-snug">صوم الميلاد المجيد</h1>
-              <p class="text-[11px] text-teal-100/90">نمو روحي + عملي • 25/11/2026 – 7/1/2027</p>
-              <p class="text-[11px] font-bold text-nativity-goldLight mt-1">«وُلِدَ لَكُمُ الْيَوْمَ فِي مَدِينَةِ دَاوُدَ مُخَلِّصٌ هُوَ الْمَسِيحُ الرَّبُّ» (لوقا 2: 11)</p>
+              <p class="text-[11px] text-teal-100/90">25/11/2026 – 7/1/2027 • 43 يومًا</p>
+              <p class="text-[11px] font-semibold text-nativity-goldLight/95 mt-1 leading-relaxed">«وُلِدَ لَكُمُ الْيَوْمَ فِي مَدِينَةِ دَاوُدَ مُخَلِّصٌ هُوَ الْمَسِيحُ الرَّبُّ» (لوقا 2: 11)</p>
             </div>
-            <button type="button" id="btnOpenCert" class="gold-gradient text-nativity-900 text-xs font-extrabold px-3 py-2 rounded-xl shadow shrink-0 flex items-center gap-1">
-              <i data-lucide="award" class="w-4 h-4"></i><span>الشهادة</span>
-            </button>
+            <div class="flex flex-col items-center gap-1.5 shrink-0">
+              <div class="relative w-14 h-14 flex items-center justify-center">
+                <svg class="w-14 h-14 -rotate-90" viewBox="0 0 56 56">
+                  <circle cx="28" cy="28" r="23" stroke="rgba(255,255,255,0.18)" stroke-width="5" fill="none" />
+                  <circle cx="28" cy="28" r="23" stroke="#D4A24C" stroke-width="5" stroke-linecap="round" fill="none"
+                    stroke-dasharray="${2 * Math.PI * 23}"
+                    stroke-dashoffset="${2 * Math.PI * 23 * (1 - stats.totalPct / 100)}" />
+                </svg>
+                <span class="absolute text-xs font-extrabold text-nativity-goldLight">${stats.totalPct}%</span>
+              </div>
+              <button type="button" id="btnOpenCert" class="native-btn gold-gradient text-nativity-900 text-[10.5px] font-extrabold px-2.5 py-1 rounded-full shadow flex items-center gap-1">
+                <i data-lucide="award" class="w-3 h-3"></i><span>الشهادة</span>
+              </button>
+            </div>
           </div>
 
           <div class="grid grid-cols-2 gap-2.5">
@@ -782,10 +800,10 @@
         </section>
 
         <!-- 0. Daily Reading from PDF Plan ("الطريق إلى الميلاد") -->
-        <article class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 border-t-4 border-t-cyan-700 space-y-2.5">
+        <article class="bg-white dark:bg-[#11202D] rounded-3xl p-4 card-shadow border border-slate-200/60 dark:border-slate-800/80 border-t-4 border-t-cyan-700 space-y-2.5">
           <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-2">
-              <span class="w-8 h-8 rounded-xl bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300 flex items-center justify-center shrink-0">
+              <span class="w-10 h-10 squircle shadow-sm bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300 flex items-center justify-center shrink-0">
                 <i data-lucide="book-open" class="w-4 h-4"></i>
               </span>
               <div>
@@ -806,10 +824,10 @@
         </article>
 
         <!-- 1. Spiritual Reel (60-90s from the 7 Fathers ONLY) -->
-        <article class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 border-t-4 border-t-sky-600 space-y-2.5">
+        <article class="bg-white dark:bg-[#11202D] rounded-3xl p-4 card-shadow border border-slate-200/60 dark:border-slate-800/80 border-t-4 border-t-sky-600 space-y-2.5">
           <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-2">
-              <span class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300 flex items-center justify-center shrink-0">
+              <span class="w-10 h-10 squircle shadow-sm bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300 flex items-center justify-center shrink-0">
                 <i data-lucide="play-circle" class="w-4 h-4"></i>
               </span>
               <div>
@@ -829,10 +847,10 @@
         </article>
 
         <!-- 2. Daily Prayer + Jesus Prayer Counter -->
-        <article class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 border-t-4 border-t-amber-500 space-y-2.5">
+        <article class="bg-white dark:bg-[#11202D] rounded-3xl p-4 card-shadow border border-slate-200/60 dark:border-slate-800/80 border-t-4 border-t-amber-500 space-y-2.5">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 flex items-center justify-center">
+              <span class="w-10 h-10 squircle shadow-sm bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 flex items-center justify-center">
                 <i data-lucide="flame" class="w-4 h-4"></i>
               </span>
               <div>
@@ -858,10 +876,10 @@
         </article>
 
         <!-- 3. Orthodox Teaching -->
-        <article class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 border-t-4 border-t-teal-600 space-y-2.5">
+        <article class="bg-white dark:bg-[#11202D] rounded-3xl p-4 card-shadow border border-slate-200/60 dark:border-slate-800/80 border-t-4 border-t-teal-600 space-y-2.5">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="w-8 h-8 rounded-xl bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 flex items-center justify-center">
+              <span class="w-10 h-10 squircle shadow-sm bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 flex items-center justify-center">
                 <i data-lucide="scroll-text" class="w-4 h-4"></i>
               </span>
               <div>
@@ -880,10 +898,10 @@
         </article>
 
         <!-- 4. Practical Mini-Course Lesson (with full explanation + direct YouTube) -->
-        <article class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 border-t-4 ${trackStyle.border} space-y-2.5">
+        <article class="bg-white dark:bg-[#11202D] rounded-3xl p-4 card-shadow border border-slate-200/60 dark:border-slate-800/80 border-t-4 ${trackStyle.border} space-y-2.5">
           <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-2">
-              <span class="w-8 h-8 rounded-xl ${trackStyle.bg} flex items-center justify-center shrink-0">
+              <span class="w-10 h-10 squircle shadow-sm ${trackStyle.bg} flex items-center justify-center shrink-0">
                 <i data-lucide="${trackStyle.icon}" class="w-4 h-4"></i>
               </span>
               <div>
@@ -943,7 +961,7 @@
         const sel = state.quizAnswers[q.id];
         const isAnswered = sel !== undefined;
         return `
-          <article class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 space-y-2.5">
+          <article class="bg-white dark:bg-[#11202D] rounded-3xl p-4 card-shadow border border-slate-200/60 dark:border-slate-800/80 space-y-2.5">
             <div class="flex items-center justify-between gap-2">
               <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${q.type === 'mcq' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-200' : 'bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-200'}">
                 ${q.type === 'mcq' ? `اختياري ${idxNum}` : `صح وخطأ ${idxNum}`} • +10 نقاط
@@ -1053,7 +1071,7 @@
 
       return `
         <section class="space-y-3">
-          <div class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 space-y-3">
+          <div class="bg-white dark:bg-[#11202D] rounded-3xl p-4 card-shadow border border-slate-200/60 dark:border-slate-800/80 space-y-3">
             <h1 class="text-base font-extrabold">المسار العملي الموازي (شرح + يوتيوب مباشر)</h1>
             <p class="text-xs text-slate-600 dark:text-slate-300">كل ماتريال الكورسات الثلاثة موجودة جوا التطبيق: شرح واضح، تطبيق عملي، وفيديو يوتيوب مباشر لكل درس.</p>
             <div class="space-y-2">
@@ -1240,7 +1258,7 @@
 
       return `
         <section class="space-y-3">
-          <div class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 space-y-2.5">
+          <div class="bg-white dark:bg-[#11202D] rounded-3xl p-4 card-shadow border border-slate-200/60 dark:border-slate-800/80 space-y-2.5">
             <div class="flex items-center justify-between gap-2">
               <h1 class="text-base font-extrabold">المتابعة الروحية والحضور</h1>
               <input type="date" id="attendanceDateInput" value="${dateIso}" min="2026-11-25" max="2027-01-07" class="text-xs font-bold px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
@@ -1252,7 +1270,7 @@
           </div>
 
           ${sections.map(sec => `
-            <div class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 space-y-2.5">
+            <div class="bg-white dark:bg-[#11202D] rounded-3xl p-4 card-shadow border border-slate-200/60 dark:border-slate-800/80 space-y-2.5">
               <h2 class="text-sm font-extrabold text-nativity-800 dark:text-nativity-goldLight">${sec.title}</h2>
               <div class="space-y-2">
                 ${sec.items.map((label, i) => {
@@ -1273,7 +1291,7 @@
       return `
         <section class="space-y-3">
           <!-- User Profile & Basic Settings -->
-          <div class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 space-y-3">
+          <div class="bg-white dark:bg-[#11202D] rounded-3xl p-4 card-shadow border border-slate-200/60 dark:border-slate-800/80 space-y-3">
             <div class="flex items-center justify-between">
               <div>
                 <h1 class="text-sm font-extrabold">${state.user.email || 'حساب المستخدم'}</h1>
@@ -1329,7 +1347,7 @@
 
           ${!IS_SUPABASE_CONFIGURED ? `
           <!-- Role Switcher (Preview Only) -->
-          <div class="bg-white dark:bg-[#11202D] rounded-2xl p-4 card-shadow border border-slate-200/70 dark:border-slate-800 space-y-2.5">
+          <div class="bg-white dark:bg-[#11202D] rounded-3xl p-4 card-shadow border border-slate-200/60 dark:border-slate-800/80 space-y-2.5">
             <div class="flex items-center gap-2">
               <i data-lucide="shield-check" class="w-4 h-4 text-nativity-700 dark:text-nativity-gold"></i>
               <h2 class="text-sm font-extrabold">تبديل الصلاحية (وضع المعاينة فقط)</h2>
@@ -1676,11 +1694,12 @@
 
       document.querySelectorAll('.nav-btn').forEach(btn => {
         const active = btn.dataset.tab === state.activeTab;
-        btn.classList.toggle('text-nativity-800', active && !state.darkMode);
+        btn.classList.toggle('text-nativity-900', active && !state.darkMode);
         btn.classList.toggle('dark:text-nativity-gold', active);
-        btn.classList.toggle('bg-teal-50', active && !state.darkMode);
-        btn.classList.toggle('dark:bg-slate-800', active);
-        btn.classList.toggle('text-slate-500', !active);
+        btn.classList.toggle('nav-pill-active', active);
+        btn.classList.toggle('font-extrabold', active);
+        btn.classList.toggle('text-slate-400', !active);
+        btn.classList.toggle('dark:text-slate-500', !active);
       });
 
       lucide.createIcons();
