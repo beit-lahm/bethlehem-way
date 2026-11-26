@@ -498,7 +498,7 @@
       adminSubTab: 'overview', // 'overview' | 'whatsapp' | 'emergency' | 'security'
       darkMode: false,
       fontSize: 'md',
-      reminderTime: '10:00',
+      reminderTime: '09:00',
       afternoonTime: '17:00',
       courseFilter: 'all',
       expandedLessonDay: 1,
@@ -769,7 +769,7 @@
             <div class="flex items-start gap-2 min-w-0">
               <i data-lucide="bell-ring" class="w-4 h-4 text-teal-700 dark:text-nativity-gold shrink-0 mt-0.5"></i>
               <div class="text-[11px] leading-snug text-teal-950 dark:text-teal-100">
-                <strong>فعّل إشعارات الرحلة لبيت لحم:</strong> آية اليوم <strong>10:00 ص</strong> + تذكير القراءات والكورسات <strong>5:00 م</strong>.
+                <strong>فعّل إشعارات الرحلة لبيت لحم:</strong> آية اليوم وتشجيع البداية <strong>9:00 ص</strong> + تذكير لطيف للإكمال <strong>5:00 م</strong>.
               </div>
             </div>
             <button type="button" id="btnEnableNotifications" class="px-2.5 py-1.5 rounded-xl bg-nativity-800 text-white text-[11px] font-extrabold shrink-0">تفعيل</button>
@@ -1357,7 +1357,7 @@
               <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-[11px] space-y-2 text-slate-700 dark:text-slate-200">
                 <div class="flex items-center justify-between gap-2">
                   <span>🌅 <strong>إشعار آية اليوم:</strong></span>
-                  <input type="time" id="morningTimeInput" value="${state.reminderTime || '10:00'}" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold" />
+                  <input type="time" id="morningTimeInput" value="${state.reminderTime || '09:00'}" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold" />
                 </div>
                 <div class="flex items-center justify-between gap-2">
                   <span>🌇 <strong>تذكير الرحلة لبيت لحم:</strong></span>
@@ -2214,16 +2214,19 @@
       let title = 'في طريق بيت لحم ✨';
       let body = '';
       if (slot === 'morning') {
-        title = `🌅 آية اليوم (يوم ${d.day} – صوم الميلاد)`;
-        body = `${d.meditation.ref}: ${d.meditation.text}`;
+        title = `🌅 آية اليوم وتشجيع البداية (يوم ${d.day})`;
+        body = `${d.reading ? d.reading.ref : d.meditation.ref}: ${d.meditation.text} — يلا ابدأ قراءاتك النهاردة!`;
       } else if (slot === 'afternoon') {
-        title = '🌇 كمّل رحلتك لبيت لحم ✝️';
-        body = `تذكير الساعة 5 العصر: ادخل كمّل ريلز التأمل وقراءاتك ودرس الكورس العملي النهاردة (${d.career.trackAr})!`;
+        title = '🌇 تذكير لطيف لرحلتك لبيت لحم ✝️';
+        body = `فضّي 10 دقايق دلوقتي وكمّل قراءاتك وريلز التأمل ودرس (${d.career.trackAr}) قبل نهاية اليوم!`;
       } else {
         title = `🔔 تم تفعيل إشعارات في طريق بيت لحم`;
-        body = `هيوصلك آية اليوم 10:00 ص (${d.meditation.ref}) وتذكير تشجيعي 5:00 م يوميًا!`;
+        body = `هيوصلك آية اليوم 9:00 ص وتذكير لطيف 5:00 م يوميًا!`;
       }
-      try { new Notification(title, { body, dir: 'rtl', lang: 'ar' }); } catch (e) {}
+      showToast(`${title}: ${body}`);
+      if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+        try { new Notification(title, { body, dir: 'rtl', lang: 'ar' }); } catch (e) {}
+      }
     }
 
     // Capture native Android/Chrome PWA Install prompt for background operation
@@ -2235,23 +2238,23 @@
 
     // Check every 30 seconds for configured Morning Verse (default 10:00) & Afternoon Reminder (default 17:00)
     function checkScheduledNotifications() {
-      if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
       const now = new Date();
-      const todayKey = now.toISOString().slice(0, 10);
+      const todayKey = new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Cairo' }).format(now);
       const hhmm = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-      const mTime = state.reminderTime || '10:00';
+      const mTime = state.reminderTime || '09:00';
       const aTime = state.afternoonTime || '17:00';
       try {
-        if (hhmm === mTime && !localStorage.getItem(`notif_m_${todayKey}_${mTime}`)) {
-          localStorage.setItem(`notif_m_${todayKey}_${mTime}`, '1');
+        if (hhmm >= mTime && hhmm < aTime && !localStorage.getItem(`notif_m_${todayKey}`)) {
+          localStorage.setItem(`notif_m_${todayKey}`, '1');
           sendDailyNotification('morning');
         }
-        if (hhmm === aTime && !localStorage.getItem(`notif_a_${todayKey}_${aTime}`)) {
-          localStorage.setItem(`notif_a_${todayKey}_${aTime}`, '1');
+        if (hhmm >= aTime && !localStorage.getItem(`notif_a_${todayKey}`)) {
+          localStorage.setItem(`notif_a_${todayKey}`, '1');
           sendDailyNotification('afternoon');
         }
       } catch (e) {}
     }
+    setTimeout(checkScheduledNotifications, 2500);
     setInterval(checkScheduledNotifications, 30000);
 
     document.addEventListener('change', (e) => {
